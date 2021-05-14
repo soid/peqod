@@ -12,9 +12,9 @@ def index(request):
     q_term = request.GET.get('term', '').strip()
     if q_term:
         q_semester, q_year = q_term.rsplit(" ", 1)
+        q_year = int(q_year)
     else:
         q_semester, q_year = None, None
-    q_year = int(q_year)
     q_query = request.GET.get('q', '')
     q_department = request.GET.get('dep', '')
     q_level = request.GET.getlist('lvl', [])
@@ -48,7 +48,6 @@ def index(request):
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
     departments = Course.objects.order_by("department").values('department').distinct()
 
-    print(q_department)
     context = {
         # filters
         'q_year': q_year,

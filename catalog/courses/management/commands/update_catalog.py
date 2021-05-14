@@ -6,11 +6,11 @@ from django.db.utils import DataError
 from django.db.utils import OperationalError
 from django.core.exceptions import ValidationError
 
-from courses.models import Course
+from courses.models import Course, Instructor
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = 'Updates provided semester classes'
 
     def add_arguments(self, parser):
         parser.add_argument('semesters', nargs='+', type=str)
@@ -41,8 +41,15 @@ class Command(BaseCommand):
                                      semester=semester,
                                      call_number=course['call_number'])
 
+                    # instructor
+                    if course['instructor']:
+                        instructor = Instructor.get_by_name(course['instructor'])
+                        obj.instructor = instructor
+
                     # update fields
                     for key in course.keys():
+                        if key.startswith('instructor'):
+                            continue
                         if hasattr(obj, key):
                             val = course[key]
                             if key.startswith('scheduled_time_') and val:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from django.db import models
 
 
@@ -14,11 +15,7 @@ class Course(models.Model):
     course_subtitle = models.CharField(max_length=128, null=True)
     course_descr = models.TextField(null=True)
 
-    instructor = models.CharField(max_length=128, null=True)
-    instructor_culpa_link = models.URLField(null=True)
-    instructor_culpa_reviews_count = models.PositiveSmallIntegerField(null=True)
-    # instructor_culpa_nugget
-    instructor_wikipedia_link = models.URLField(null=True)
+    instructor = models.ForeignKey('Instructor', null=True, on_delete=models.CASCADE)
     link = models.URLField(null=True)
 
     # campus
@@ -37,8 +34,26 @@ class Course(models.Model):
     # type
 
     added_date = models.DateTimeField('date added', auto_now_add=True)
+    edited_date = models.DateTimeField('date edited', auto_now=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['year', 'semester', 'call_number'], name='class per semester')
         ]
+
+
+class Instructor(models.Model):
+    name = models.CharField(max_length=128)
+    culpa_link = models.URLField(null=True)
+    culpa_reviews_count = models.PositiveSmallIntegerField(null=True)
+    culpa_nugget = models.CharField(max_length=1, null=True)
+    wikipedia_link = models.URLField(null=True)
+
+    @staticmethod
+    def get_by_name(name: str) -> Instructor:
+        obj = Instructor.objects.filter(name=name)
+        if len(obj) > 0:
+            return obj[0]
+        else:
+            obj = Instructor(name=name)
+            return obj

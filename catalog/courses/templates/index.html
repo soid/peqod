@@ -73,7 +73,9 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">{{ course.course_title }}</h5>
+                        {% if course.course_subtitle %}
                             <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
+                        {% endif %}
                             <p class="card-text" id="card-details-{{ course.class_id }}" hidden="true">
                                 {% if course.course_descr %}
                                 {{ course.course_descr | linebreaksbr }}
@@ -86,18 +88,21 @@
                                 {% endif %}
                                 {% if course.instructor %}
                                 <li class="list-group-item">
-                                    Instructor: {{ course.instructor}}
-                                    {% if course.instructor_culpa_link or course.instructor_wikipedia_link %}<br/>{% endif %}
-                                    {% if course.instructor_culpa_link %}
-                                    <a href="{{ course.instructor_culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
-                                        CULPA: {{ course.instructor_culpa_reviews_count }}
+                                    Instructor: {{ course.instructor.name }}
+                                    {% if course.instructor.culpa_link or course.instructor.wikipedia_link %}<br/>{% endif %}
+                                    {% if course.instructor.culpa_link %}
+                                    <a href="{{ course.instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                        CULPA: {{ course.instructor.culpa_reviews_count }}
                                     </a>
                                     {% endif %}
-                                    {% if course.instructor_wikipedia_link %}
-                                        <a href="{{ course.instructor_wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                    {% if course.instructor.wikipedia_link %}
+                                        <a href="{{ course.instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
                                             Wikipedia
                                         </a>
                                     {% endif %}
+                                    <a href="" class="btn btn-outline-info btn-sm" role="button">
+                                        Info
+                                    </a>
                                 </li>
                                 {% endif %}
                                 <li class="list-group-item">{{ course.points }} points</li>
