@@ -18,14 +18,14 @@ class Command(BaseCommand):
             semester = tmp[1]
             print("Running for", term)
 
-            with open("/columbia-catalog-data/classes/2021-Spring.json") as fclasses:
+            with open("/columbia-catalog-data/classes/" + year + "-" + semester.capitalize() + ".json") as fclasses:
                 num = 1
                 for line in fclasses:
                     course = json.loads(line)
                     # find existing one
                     obj = Course.objects.filter(year=year,
-                                          semester=semester,
-                                          call_number=course['call_number'])
+                                                semester=semester,
+                                                call_number=course['call_number'])
                     if len(obj) > 0:
                         obj = obj[0]
                     else:
