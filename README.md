@@ -11,5 +11,5 @@
 
 ### Create admin user
 
-    python catalog/manage.py createsuperuser --user root --email soid@dicefield.com --no-inp
+    DJANGO_SUPERUSER_PASSWORD=123 python catalog/manage.py createsuperuser --user root --email soid@dicefield.com --no-input
 

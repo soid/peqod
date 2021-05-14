@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col">
+                    <form method="get">
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <select name="term" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                {% for term in semesters %}
+                                    <option {% if q_year == term.year and q_semester == term.semester %}selected{% endif %}>
+                                        {{ term.semester }} {{ term.year }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <select name="dep" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                {% for dep in departments %}
+                                    <option {% if q_department == dep.department %}selected{% endif %}>
+                                        {{ dep.department }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <select name="lvl" class="selectpicker" data-none-selected-text="Levels: all" data-style="btn-secondary" multiple data-actions-box="true">
+                                <option>1000</option>
+                                <option>2000</option>
+                                <option>3000</option>
+                                <option>4000-5000</option>
+                                <option>6000-8000</option>
+                            </select>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <select name="d" class="selectpicker" data-none-selected-text="Days: all" data-style="btn-secondary" multiple data-actions-box="true">
+                                {% for key,name in days %}
+                                    <option value="{{ key }}" {% if key in q_day %}selected{% endif %}>
+                                        {{ name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-text" id="btnGroupAddon">Search:</div>
+                            <input type="text" name="q" class="form-control" placeholder="Search text" aria-label="Search text" aria-describedby="btnGroupAddon" value="{{ q_query }}">
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+
+{# List courses #}
+                {% for course in course_list.all %}
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course.course_title }}</h5>
+                            <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
+                            <p class="card-text" id="card-details-{{ course.class_id }}" hidden="true">
+                                {% if course.course_descr %}
+                                {{ course.course_descr | linebreaksbr }}
+                                {% endif %}
+                            <ul class="list-group list-group-flush">
+                                {% if course.scheduled_time_start %}
+                                <li class="list-group-item">
+                                    {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
+                                </li>
+                                {% endif %}
+                                {% if course.instructor %}
+                                <li class="list-group-item">
+                                    Instructor: {{ course.instructor}}
+                                    {% if course.instructor_culpa_link or course.instructor_wikipedia_link %}<br/>{% endif %}
+                                    {% if course.instructor_culpa_link %}
+                                    <a href="{{ course.instructor_culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                        CULPA: {{ course.instructor_culpa_reviews_count }}
+                                    </a>
+                                    {% endif %}
+                                    {% if course.instructor_wikipedia_link %}
+                                        <a href="{{ course.instructor_wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                            Wikipedia
+                                        </a>
+                                    {% endif %}
+                                </li>
+                                {% endif %}
+                                <li class="list-group-item">{{ course.points }} points</li>
+                            </ul>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    {% if course.course_descr %}
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showDetails('{{ course.class_id }}')">Show more</button>
+                                    {% endif %}
+                                    <a href="{{ course.link }}" class="btn btn-outline-secondary" role="button">
+                                        DoC
+                                    </a>
+                                </div>
+                                <small class="text-muted">{{ course.course_code }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
