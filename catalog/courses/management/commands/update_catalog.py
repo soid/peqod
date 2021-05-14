@@ -1,8 +1,12 @@
+from datetime import datetime
+import json
+
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import DataError
 from django.db.utils import OperationalError
+from django.core.exceptions import ValidationError
+
 from courses.models import Course
-import json
 
 
 class Command(BaseCommand):
@@ -18,7 +22,10 @@ class Command(BaseCommand):
             semester = tmp[1]
             print("Running for", term)
 
-            with open("/columbia-catalog-data/classes/" + year + "-" + semester.capitalize() + ".json") as fclasses:
+            import_filename = "/columbia-catalog-data/classes/" \
+                              + str(year) + "-" + semester.capitalize() + ".json"
+            num_lines = sum(1 for _ in open(import_filename))
+            with open(import_filename) as fclasses:
                 num = 1
                 for line in fclasses:
                     course = json.loads(line)
@@ -37,16 +44,21 @@ class Command(BaseCommand):
                     # update fields
                     for key in course.keys():
                         if hasattr(obj, key):
-                            setattr(obj, key, course[key])
+                            val = course[key]
+                            if key.startswith('scheduled_time_') and val:
+                                val = datetime.strptime(course[key], "%I:%M%p").time()
+                            if val == '':
+                                val = None
+                            setattr(obj, key, val)
 
                     try:
                         obj.save()
-                    except (DataError, OperationalError):
+                    except (DataError, OperationalError, ValidationError):
                         print("Error while processing:", course)
                         raise
 
                     if num % 419 == 0:
-                        print("Processed:", num)
+                        print("Processed:", num, "/", num_lines)
                     num += 1
             print("Finished for", num, "classes.")
         print('Done.')
