@@ -37,7 +37,7 @@ def index(request):
     if q_query:
         course_list = course_list.filter(
             Q(course_descr__icontains=q_query)
-            | Q(instructor__icontains=q_query)
+            | Q(instructor__name__icontains=q_query)
             | Q(course_title__icontains=q_query)
             | Q(course_subtitle__icontains=q_query))
 

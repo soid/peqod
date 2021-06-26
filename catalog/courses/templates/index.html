@@ -16,51 +16,63 @@
                 <div class="col-1"></div>
                 <div class="col">
                     <form method="get">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="btn-group me-2" role="group" aria-label="First group">
-                            <select name="term" class="selectpicker" data-style="btn-secondary" data-live-search="true">
-                                {% for term in semesters %}
-                                    <option {% if q_year == term.year and q_semester == term.semester %}selected{% endif %}>
-                                        {{ term.semester }} {{ term.year }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                        <div class="btn-toolbar" role="toolbar" aria-label="Search options">
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <select name="term" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                    {% for term in semesters %}
+                                        <option {% if q_year == term.year and q_semester == term.semester %}selected{% endif %}>
+                                            {{ term.semester }} {{ term.year }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <select name="dep" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                    {% for dep in departments %}
+                                        <option {% if q_department == dep.department %}selected{% endif %}>
+                                            {{ dep.department }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-text" id="btnGroupAddon">Search:</div>
+                                <input type="text" name="q" class="form-control" placeholder="Search text" aria-label="Search text" aria-describedby="btnGroupAddon" value="{{ q_query }}">
+                            </div>
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
                         </div>
-                        <div class="btn-group me-2" role="group" aria-label="First group">
-                            <select name="dep" class="selectpicker" data-style="btn-secondary" data-live-search="true">
-                                {% for dep in departments %}
-                                    <option {% if q_department == dep.department %}selected{% endif %}>
-                                        {{ dep.department }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+
+                        <div class="btn-toolbar" role="toolbar" aria-label="Extra search options">
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <button type="button" class="btn btn-secondary" onclick="showExtraSearchOptions()">
+                                    Advanced Options
+                                </button>
+                            </div>
                         </div>
-                        <div class="btn-group me-2" role="group" aria-label="First group">
-                            <select name="lvl" class="selectpicker" data-none-selected-text="Levels: all" data-style="btn-secondary" multiple data-actions-box="true">
-                                <option>1000</option>
-                                <option>2000</option>
-                                <option>3000</option>
-                                <option>4000-5000</option>
-                                <option>6000-8000</option>
-                            </select>
+
+                        <div class="btn-toolbar" role="toolbar" id="extra-search-options" hidden="true" aria-label="Extra search options">
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <select name="lvl" class="selectpicker" data-none-selected-text="Levels: all" data-style="btn-secondary" multiple data-actions-box="true">
+                                    <option>1000</option>
+                                    <option>2000</option>
+                                    <option>3000</option>
+                                    <option>4000-5000</option>
+                                    <option>6000-8000</option>
+                                </select>
+                            </div>
+                            <div class="btn-group me-2" role="group" aria-label="First group">
+                                <select name="d" class="selectpicker" data-none-selected-text="Days: all" data-style="btn-secondary" multiple data-actions-box="true">
+                                    {% for key,name in days %}
+                                        <option value="{{ key }}" {% if key in q_day %}selected{% endif %}>
+                                            {{ name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
-                        <div class="btn-group me-2" role="group" aria-label="First group">
-                            <select name="d" class="selectpicker" data-none-selected-text="Days: all" data-style="btn-secondary" multiple data-actions-box="true">
-                                {% for key,name in days %}
-                                    <option value="{{ key }}" {% if key in q_day %}selected{% endif %}>
-                                        {{ name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-text" id="btnGroupAddon">Search:</div>
-                            <input type="text" name="q" class="form-control" placeholder="Search text" aria-label="Search text" aria-describedby="btnGroupAddon" value="{{ q_query }}">
-                        </div>
-                        <div class="btn-group me-2" role="group" aria-label="First group">
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </div>
+
                     </form>
                 </div>
             </div>
