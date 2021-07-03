@@ -2,7 +2,7 @@ from functools import reduce
 from operator import __or__
 
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 
 from courses.models import Course
 from courses import utils
@@ -64,4 +64,10 @@ def index(request):
 
     return render(request, 'index.html', context)
 
-
+def course(request, course_code: str, term: str):
+    year, semester = term.split('-', 1)
+    courses = get_list_or_404(Course, course_code=course_code, year=year, semester=semester)
+    context = {
+        'courses': courses
+    }
+    return render(request, 'course.html', context)

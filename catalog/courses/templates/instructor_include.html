@@ -1,0 +1,15 @@
+{{ course.instructor.name }}
+{% if course.instructor.culpa_link or course.instructor.wikipedia_link %}{% endif %}
+{% if course.instructor.culpa_link %}
+    <a href="{{ course.instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+        CULPA: {{ course.instructor.culpa_reviews_count }}
+    </a>
+{% endif %}
+{% if course.instructor.wikipedia_link %}
+    <a href="{{ course.instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
+        Wikipedia
+    </a>
+{% endif %}
+<a href="" class="btn btn-outline-info btn-sm" role="button">
+    Info
+</a>

@@ -41,6 +41,9 @@ class Course(models.Model):
             models.UniqueConstraint(fields=['year', 'semester', 'call_number'], name='class per semester')
         ]
 
+    def get_term(self) -> str:
+        return str(self.year) + "-" + self.semester
+
 
 class Instructor(models.Model):
     name = models.CharField(max_length=128)

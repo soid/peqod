@@ -84,7 +84,9 @@
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">{{ course.course_title }}</h5>
+                            <h5 class="card-title">
+                                {{ course.course_title }}
+                            </h5>
                         {% if course.course_subtitle %}
                             <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                         {% endif %}
@@ -126,6 +128,9 @@
                                     {% endif %}
                                     <a href="{{ course.link }}" class="btn btn-outline-secondary" role="button">
                                         DoC
+                                    </a>
+                                    <a href="{% url 'course' course.course_code course.get_term %}" class="btn btn-outline-secondary" role="button">
+                                        Details
                                     </a>
                                 </div>
                                 <small class="text-muted">{{ course.course_code }}</small>

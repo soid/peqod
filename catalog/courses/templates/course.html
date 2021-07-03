@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
+
+    <div class="py-5 bg-light">
+        <div class="container">
+            {% for course in courses %}
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                {% if forloop.first %}
+                                    <h5>{{ course.course_title }}</h5>
+                                    {% if course.course_subtitle %}
+                                        <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
+                                    {% endif %}
+                                    {% if course.course_descr %}
+                                    <p class="card-text">
+                                        {{ course.course_descr | linebreaksbr }}
+                                    </p>
+                                    {% endif %}
+                                {% endif %}
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        Instructor: {% include "instructor_include.html" %}
+                                    </li>
+                                    <li class="list-group-item">
+                                        Days: {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        Location: {{ course.location }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        Department: {{ course.department }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        Points: {{ course.points }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        Call number: {{ course.call_number }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
