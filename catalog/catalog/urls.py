@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
+    path('instr/<str:instructor_name>', views.instructor_view, name='instructor'),
 ]

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h4>{{ instructor.name }}</h4>
+                                <p class="card-text">
+                                    Department: {{ departments|join:", " }}
+                                </p>
+                                <p>
+                                {% if instructor.culpa_link %}
+                                    <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                        CULPA: {{ instructor.culpa_reviews_count }}
+                                    </a>
+                                {% endif %}
+                                {% if instructor.wikipedia_link %}
+                                    <a href="{{ instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
+                                        Wikipedia
+                                    </a>
+                                {% endif %}
+                                </p>
+                            </div>
+{#                          Courses #}
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Courses</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for course in courses %}
+                                    <tr>
+                                        <th scope="row">{{ course.course_code }}</th>
+                                        <td>{{ course.course_title }}</td>
+                                        <td>{{ course.scheduled_days }}</td>
+                                        <td>{{ course.semester}} {{ course.year}}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+{#                          End of Courses #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

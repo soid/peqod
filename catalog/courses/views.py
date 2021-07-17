@@ -4,7 +4,7 @@ from operator import __or__
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 
-from courses.models import Course
+from courses.models import Course, Instructor
 from courses import utils
 
 
@@ -71,3 +71,20 @@ def course(request, course_code: str, term: str):
         'courses': courses
     }
     return render(request, 'course.html', context)
+
+def instructor_view(request, instructor_name: str):
+    instr = get_object_or_404(Instructor, name=instructor_name)
+    courses = Course.objects \
+        .all() \
+        .filter(instructor=instr)
+    departments = courses \
+        .values('department') \
+        .distinct() \
+        .values_list('department', flat = True)
+
+    context = {
+        'instructor': instr,
+        'courses': courses,
+        'departments': departments
+    }
+    return render(request, 'instructor.html', context)
