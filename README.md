@@ -7,8 +7,11 @@
 
 ### Import Catalog
 
+    python catalog/manage.py update_instructors
     python catalog/manage.py update_catalog 2021-Summer
-    python catalog/manage.py instructor_fields_mapping
+
+In Docker contrainer you need to mount first catalog to
+`/columbia-catalog-data`
 
 ### Create admin user
 

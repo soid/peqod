@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - '3306:3306'
+    environment:
+      LANG: C.UTF-8
+      MYSQL_DATABASE: 'cu-graph-db'
+      MYSQL_USER: 'cu-graph-user'
+      MYSQL_PASSWORD: 'password1'
+      MYSQL_ROOT_PASSWORD: 'password2'
+
+  web:
+    build: .
+    command: python catalog/manage.py runserver --insecure 0.0.0.0:8002
+    volumes:
+      - .:/CUGraphWeb
+      - /Users/soid/Dropbox/Code/2020/columbia-catalog-data:/columbia-catalog-data
+    ports:
+      - "8000:8002"
+    depends_on:
+      - db
