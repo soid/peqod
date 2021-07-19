@@ -87,7 +87,7 @@
                             <h5 class="card-title">
                                 {{ course.course_title }}
                             </h5>
-                        {% if course.course_subtitle %}
+                        {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                             <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                         {% endif %}
                             <p class="card-text" id="card-details-{{ course.class_id }}" hidden="true">

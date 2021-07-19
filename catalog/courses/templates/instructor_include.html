@@ -1,3 +1,4 @@
+{% if course.instructor %}
 {{ course.instructor.name }}
 {% if course.instructor.culpa_link or course.instructor.wikipedia_link %}{% endif %}
 {% if course.instructor.culpa_link %}
@@ -13,3 +14,4 @@
 <a href="{% url 'instructor' course.instructor.name %}" class="btn btn-outline-info btn-sm" role="button">
     Info
 </a>
+{% endif %}

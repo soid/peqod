@@ -28,15 +28,24 @@
                                     {% endif %}
                                 {% endif %}
                                 <ul class="list-group list-group-flush">
+                                    {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
+                                    <li class="list-group-item">
+                                        <div class="fw-bold">{{ course.course_subtitle }}</div>
+                                    </li>
+                                    {% endif %}
                                     <li class="list-group-item">
                                         Instructor: {% include "instructor_include.html" %}
                                     </li>
+                                    {% if course.scheduled_days %}
                                     <li class="list-group-item">
                                         Days: {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
                                     </li>
+                                    {% endif %}
+                                    {% if course.location %}
                                     <li class="list-group-item">
                                         Location: {{ course.location }}
                                     </li>
+                                    {% endif %}
                                     <li class="list-group-item">
                                         Department: {{ course.department }}
                                     </li>

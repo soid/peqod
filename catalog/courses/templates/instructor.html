@@ -41,10 +41,14 @@
                                 <tbody>
                                 {% for course in courses %}
                                     <tr>
-                                        <th scope="row">{{ course.course_code }}</th>
+                                        <th scope="row">
+                                            {{ course.course_code }}
+                                        </th>
                                         <td>{{ course.course_title }}</td>
-                                        <td>{{ course.scheduled_days }}</td>
-                                        <td>{{ course.semester}} {{ course.year}}</td>
+                                        <td>{% if course.scheduled_days %}{{ course.scheduled_days }}{% endif %}</td>
+                                        <td><a class="btn btn-link" href="{% url 'course' course.course_code course.get_term %}">
+                                            {{ course.semester}} {{ course.year}}
+                                        </a></td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
