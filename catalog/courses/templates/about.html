@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h4>About Peqod</h4>
+                                <p>
+                                    TODO: explain the purpose of the project.
+                                </p>
+                                <p>
+                                    The project is based on the data from
+                                    <a class="btn-link" href="https://github.com/soid/columbia-catalog-data">columbia-catalog-data</a>
+                                    available in JSON and CSV formats.
+                                </p>
+
+                                <h4>Features</h4>
+                                <ul>
+                                    <li>Wikipedia links to instructors.</li>
+                                    <li>A list of catalog recent updates.</li>
+                                    <li>An archive of Columbia University schedule for many years.</li>
+                                    <li>
+                                        Another <a class="btn-link" href="http://culpa.info">CULPA</a> mirror for reading reviews
+                                        when original CULPA is down.
+                                    </li>
+                                </ul>
+
+                                <h4>Contact</h4>
+                                <p>
+                                    Github issues
+                                </p>
+
+                                <p>
+                                    Peqod is misspelled Pequod. Just like Google is misspelled Googol.
+                                </p>
+
+                                <div align="center">
+                                <img src="{% static 'piqod-big1.png' %}" height="690"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

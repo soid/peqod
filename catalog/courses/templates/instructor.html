@@ -44,7 +44,12 @@
                                         <th scope="row">
                                             {{ course.course_code }}
                                         </th>
-                                        <td>{{ course.course_title }}</td>
+                                        <td>
+                                            {{ course.course_title }}
+                                            {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
+                                                <div class="font-italic">{{ course.course_subtitle }}</div>
+                                            {% endif %}
+                                        </td>
                                         <td>{% if course.scheduled_days %}{{ course.scheduled_days }}{% endif %}</td>
                                         <td><a class="btn btn-link" href="{% url 'course' course.course_code course.get_term %}">
                                             {{ course.semester}} {{ course.year}}

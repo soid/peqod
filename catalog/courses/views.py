@@ -42,13 +42,14 @@ def index(request):
             | Q(course_subtitle__icontains=q_query))
 
     # order
-    course_list = course_list.order_by('course_code')[:60]
+    course_list = course_list.order_by('section_key')[:60]  # TODO pagination
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
     departments = Course.objects.order_by("department").values('department').distinct()
 
     context = {
+        'menu': 'search',
         # filters
         'q_year': q_year,
         'q_semester': q_semester,
@@ -88,3 +89,6 @@ def instructor_view(request, instructor_name: str):
         'departments': departments
     }
     return render(request, 'instructor.html', context)
+
+def about(request):
+    return render(request, 'about.html', {'menu': 'about'})
