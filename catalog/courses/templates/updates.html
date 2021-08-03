@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-2"></div>
+                    <div class="col-8">
+                        {% for update in page_obj %}
+                            {% ifchanged update.added_date %}
+                                {% if not forloop.first %}</div>{% endif %}
+                                <div class="my-3 p-3 bg-body rounded shadow-sm">
+                                <h6 class="border-bottom pb-2 mb-0">{{ update.added_date }}</h6>
+                            {% endifchanged %}
+                            <div class="d-flex text-muted pt-3">
+                                <p class="pb-3 mb-0 small lh-sm border-bottom">
+                                    <strong class="d-block text-gray-dark" id="update{{ update.id }}">
+                                        <a href="{% url 'course' update.related_class.course_code update.related_class.get_term %}" role="button">
+                                        {{ update.related_class.course_code }}: {{ update.related_class.course_title }}
+                                        </a>
+                                        ({{ update.related_class.semester }} {{ update.related_class.year }})
+                                    </strong>
+                                    {% if update.is_T_NEW_CLASS %}<span class="badge rounded-pill bg-primary">New class</span><br/>{% endif %}
+                                    {% if update.is_T_NEW_INSTRUCTOR %}
+                                        New instructor
+                                        <span class="badge rounded-pill bg-success">{{ update.related_instructor.name }}</span>
+                                        <br/>
+                                    {% endif %}
+                                    {% if update.is_T_DELETED_CLASS %}Removed class<br/>{% endif %}
+                                    {% if update.is_T_CHANGED_TIME %}
+                                        Changed schedule
+                                        {% if update.get_diff.old_scheduled_days or update.get_diff.old_scheduled_time_start %}
+                                            <span class="badge rounded-pill bg-danger"> -{% if update.get_diff.old_scheduled_days %}{{ update.get_diff.old_scheduled_days }} {% endif %}{% if update.get_diff.old_scheduled_time_start %}{{ update.get_diff.old_scheduled_time_start }}-{{ update.get_diff.old_scheduled_time_end }}{% endif %}</span>
+                                        {% endif %}
+                                        {% if update.get_diff.new_scheduled_days or update.get_diff.new_scheduled_time_start %}
+                                            <span class="badge rounded-pill bg-success">+{% if update.get_diff.new_scheduled_days %}{{ update.get_diff.new_scheduled_days }} {% endif %}{% if update.get_diff.new_scheduled_time_start %}{{ update.get_diff.new_scheduled_time_start }}-{{ update.get_diff.new_scheduled_time_end }}{% endif %}</span>
+                                        {% endif %}
+                                        <br/>
+                                    {% endif %}
+                                    {% if update.is_T_CHANGED_INSTRUCTOR %}Changed instructor
+                                        <span class="badge rounded-pill bg-danger">-{{ update.get_diff.old_instructor }}</span>
+                                        <span class="badge rounded-pill bg-success">+{{ update.get_diff.new_instructor }}</span>
+                                        <br/>
+                                    {% endif %}
+                                    {% if update.is_T_CHANGED_DESCRIPTION %}Changed description<br/>{% endif %}
+                                    {% if update.is_T_CHANGED_LOCATION %}Changed location<br/>{% endif %}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                <nav class="blog-pagination" aria-label="Pagination">
+                    {% if page_obj.has_next %}
+                    <a class="btn btn-outline-secondary" href="?p={{ page_obj.next_page_number }}">Older</a>
+                    {% else %}
+                    <a class="btn btn-outline-secondary disabled" href="#" aria-disabled="true">Older</a>
+                    {% endif %}
+
+                    {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-secondary" href="?p={{ page_obj.previous_page_number }}" tabindex="-1">Newer</a>
+                    {% else %}
+                    <a class="btn btn-outline-secondary disabled" href="#" tabindex="-1" aria-disabled="true">Newer</a>
+                    {% endif %}
+                </nav>
+
+                    </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,10 +1,11 @@
 from functools import reduce
 from operator import __or__
 
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 
-from courses.models import Course, Instructor
+from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 
 
@@ -89,6 +90,22 @@ def instructor_view(request, instructor_name: str):
         'departments': departments
     }
     return render(request, 'instructor.html', context)
+
+def updates(request):
+    page_number = request.GET.get('p')
+
+    updates = CatalogUpdate.objects \
+        .order_by('-added_date') \
+        .prefetch_related('related_class')
+
+    paginator = Paginator(updates, 100)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'menu': 'updates',
+        'page_obj': page_obj
+    }
+    return render(request, 'updates.html', context)
 
 def about(request):
     return render(request, 'about.html', {'menu': 'about'})

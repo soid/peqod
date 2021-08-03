@@ -17,7 +17,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 {% if forloop.first %}
-                                    <h5>{{ course.course_title }}</h5>
+                                    <h5>{{ course.course_code }}: {{ course.course_title }}</h5>
                                     {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                                         <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                                     {% endif %}
@@ -34,7 +34,9 @@
                                     </li>
                                     {% endif %}
                                     <li class="list-group-item">
+                                        {% if course.instructor %}
                                         Instructor: {% include "instructor_include.html" %}
+                                        {% endif %}
                                     </li>
                                     {% if course.scheduled_days %}
                                     <li class="list-group-item">
