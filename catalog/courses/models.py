@@ -54,6 +54,7 @@ class Instructor(models.Model):
     culpa_link = models.URLField(null=True)
     culpa_reviews_count = models.PositiveSmallIntegerField(null=True)
     culpa_nugget = models.CharField(max_length=1, null=True)
+    culpa_reviews = models.JSONField(null=True)
     wikipedia_link = models.URLField(null=True)
 
     @staticmethod

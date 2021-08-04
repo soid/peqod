@@ -16,7 +16,9 @@ class Command(BaseCommand):
             num = 1
             for line in fclasses:
                 instructor_json = json.loads(line)
-                obj = Instructor.get_by_name(instructor_json['name'])
+
+                # add instructor
+                obj, _ = Instructor.get_by_name(instructor_json['name'])
                 # update fields
                 for field_name in Command.instructor_fields:
                     if instructor_json[field_name]:
@@ -24,7 +26,11 @@ class Command(BaseCommand):
                         if 'culpa_nugget' == field_name:
                             val = Command.convert_nugget(val)
                         setattr(obj, field_name, val)
+
+                if 'culpa_reviews' in instructor_json.keys():
+                    obj.culpa_reviews = instructor_json['culpa_reviews']
                 obj.save()
+
                 if num % 250 == 0:
                     print("Processed:", num, "/", num_lines)
                 num += 1

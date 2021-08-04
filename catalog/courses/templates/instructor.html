@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cutags %}
 
 {% block title %}Columbia Catalog{% endblock %}
 
@@ -20,11 +21,15 @@
                                     <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
                                         CULPA: {{ instructor.culpa_reviews_count }}
                                     </a>
+                                {% else %}
+                                    <a class="btn btn-outline-secondary btn-sm disabled">No CULPA reviews</a>
                                 {% endif %}
                                 {% if instructor.wikipedia_link %}
                                     <a href="{{ instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
                                         Wikipedia
                                     </a>
+                                {% else %}
+                                    <a class="btn btn-outline-secondary btn-sm disabled">No Wikipedia Page</a>
                                 {% endif %}
                                 </p>
                             </div>
@@ -60,12 +65,41 @@
                             </table>
 {#                          End of Courses #}
                         </div>
+
 {#                          CULPA Reviews #}
-                        <div class="card shadow-sm" style="margin-top: 20px;">
+                    {% if instructor.culpa_reviews %}
+                        <div class="card shadow-sm" style="margin-top: 20px; padding-left: 20px; padding-right: 20px;">
                             <div class="card-body">
-                                <h4>CULPA Reviews (Copy from CULPA.info)</h4>
+                                <h4>CULPA Reviews</h4>
+                                (Copy from <a href="{{ instructor.culpa_link }}">CULPA.info</a>)
                             </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="width: 90px;">Date</th>
+                                    <th scope="col"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for review in instructor.culpa_reviews %}
+                                <tr>
+                                    <td>
+                                        {{ review.publish_date | to_date | date:"M d" }}<br/>
+                                        {{ review.publish_date | to_date | date:"Y" }}
+                                    </td>
+                                    <td>
+                                        {{ review.text | linebreaks }}
+                                        <strong>Workload</strong>:
+                                        {{ review.workload | linebreaks }}
+                                        <i>Agreed: {{ review.agree_count }} Disagreed: {{ review.disagree_count }} Funny: {{ review.funny_count }}</i>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
+                    {% endif %}
+{#                          End CULPA Reviews #}
                     </div>
                 </div>
             </div>
