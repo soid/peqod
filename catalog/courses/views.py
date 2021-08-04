@@ -9,6 +9,9 @@ from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 
 
+def _get_last_updated():
+    return Course.objects.order_by('-added_date')[0].added_date
+
 def index(request):
     q_term = request.GET.get('term', '').strip()
     if q_term:
@@ -61,7 +64,9 @@ def index(request):
         "course_list": course_list,
         "semesters": semesters,
         "departments": departments,
-        "days": utils.DAYS
+        "days": utils.DAYS,
+        # last updated
+        'last_updated': _get_last_updated(),
     }
 
     return render(request, 'index.html', context)
@@ -70,7 +75,8 @@ def course(request, course_code: str, term: str):
     year, semester = term.split('-', 1)
     courses = get_list_or_404(Course, course_code=course_code, year=year, semester=semester)
     context = {
-        'courses': courses
+        'courses': courses,
+        'last_updated': _get_last_updated(),
     }
     return render(request, 'course.html', context)
 
@@ -87,7 +93,8 @@ def instructor_view(request, instructor_name: str):
     context = {
         'instructor': instr,
         'courses': courses,
-        'departments': departments
+        'departments': departments,
+        'last_updated': _get_last_updated(),
     }
     return render(request, 'instructor.html', context)
 
@@ -103,9 +110,13 @@ def updates(request):
 
     context = {
         'menu': 'updates',
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'last_updated': _get_last_updated(),
     }
     return render(request, 'updates.html', context)
 
 def about(request):
-    return render(request, 'about.html', {'menu': 'about'})
+    return render(request, 'about.html', {
+        'menu': 'about',
+        'last_updated': _get_last_updated(),
+    })
