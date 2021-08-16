@@ -35,7 +35,7 @@
                                     {% endif %}
                                     <li class="list-group-item">
                                         {% if course.instructor %}
-                                        Instructor: {% include "instructor_include.html" %}
+                                        Instructor: {% include "instructor_include.html" with instructor=course.instructor %}
                                         {% endif %}
                                     </li>
                                     {% if course.scheduled_days %}

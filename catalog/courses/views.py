@@ -2,11 +2,12 @@ from functools import reduce
 from operator import __or__
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count, Max
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 
 from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
+from courses.templatetags.cutags import unslash
 
 
 def _get_last_updated():
@@ -70,6 +71,43 @@ def index(request):
     }
 
     return render(request, 'index.html', context)
+
+def deps_list(request):
+    deps = Course.objects.values("department")\
+        .annotate(count_instructors=Count('instructor__id', distinct=True),
+                  count_classes=Count('course_code', distinct=True)) \
+        .order_by('department')
+
+    context = {
+        'menu': 'deps',
+        'deps': deps,
+        'last_updated': _get_last_updated(),
+    }
+    return render(request, 'departments.html', context)
+
+def department(request, department: str):
+    clss = Course.objects\
+        .filter(department=unslash(department))\
+        .values("course_code","course_title","course_subtitle")\
+        .annotate(count_instructors=Count('instructor__id', distinct=True),
+                  last_taught=Max('year'))\
+        .order_by('course_code', 'course_title', 'course_subtitle')
+
+    instructors = Instructor.objects\
+        .filter(course__department=unslash(department))\
+        .values("name","wikipedia_link","culpa_link","culpa_reviews_count") \
+        .annotate(count_classes=Count('course__id', distinct=True),
+                  last_taught=Max('course__year')) \
+        .order_by("name")
+
+    context = {
+        'menu': 'deps',
+        'department': department,
+        'classes': clss,
+        'instructors': instructors,
+        'last_updated': _get_last_updated(),
+    }
+    return render(request, 'department.html', context)
 
 def course(request, course_code: str, term: str):
     year, semester = term.split('-', 1)

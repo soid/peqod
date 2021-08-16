@@ -21,6 +21,8 @@ from courses import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
+    path('deps', views.deps_list, name='departments'),
+    path('department/<str:department>', views.department, name='department'),
     path('about', views.about, name='about'),
     path('updates', views.updates, name='updates'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),

@@ -1,17 +1,17 @@
-{% if course.instructor %}
-{{ course.instructor.name }}
-{% if course.instructor.culpa_link or course.instructor.wikipedia_link %}{% endif %}
-{% if course.instructor.culpa_link %}
-    <a href="{{ course.instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
-        CULPA: {{ course.instructor.culpa_reviews_count }}
+{% if instructor %}
+{{ instructor.name }}
+{% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
+{% if instructor.culpa_link %}
+    <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+        CULPA: {{ instructor.culpa_reviews_count }}
     </a>
 {% endif %}
-{% if course.instructor.wikipedia_link %}
-    <a href="{{ course.instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
+{% if instructor.wikipedia_link %}
+    <a href="{{ instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
         Wikipedia
     </a>
 {% endif %}
-<a href="{% url 'instructor' course.instructor.name %}" class="btn btn-outline-info btn-sm" role="button">
+<a href="{% url 'instructor' instructor.name %}" class="btn btn-outline-info btn-sm" role="button">
     Info
 </a>
 {% endif %}

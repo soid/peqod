@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Columbia Catalog - List of Departments{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4>{{ department }} Department</h4>
+                            {{ classes.count }} classes
+                            {{ instructors.count }} instructors
+{#                            Classes#}
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Class</th>
+                                    <th scope="col">Last Taught</th>
+                                    <th scope="col">Instructors</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for class in classes %}
+                                <tr>
+                                    <td>
+                                        <small class="text-muted">{{ class.course_code }}</small> {{ class.course_title }}
+                                        {% if class.course_subtitle and not class.course_subtitle in class.course_title %}
+                                            <br/><small class="text-muted">{{ class.course_subtitle }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ class.last_taught }}</td>
+                                    <td>{{ class.count_instructors }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+{#                Instructors#}
+                <div class="col" style="margin-top: 20px;">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4>Instructors</h4>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Instructor</th>
+                                    <th scope="col">Last Taught</th>
+                                    <th scope="col">Classes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for instructor in instructors %}
+                                <tr>
+                                    <td>{% include "instructor_include.html" %}</td>
+                                    <td>{{ instructor.last_taught }}</td>
+                                    <td>{{ instructor.count_classes }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

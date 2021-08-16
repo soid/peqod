@@ -21,3 +21,7 @@ In Docker contrainer you need to mount first catalog to
 
     python catalog/manage.py makemigrations
     python catalog/manage.py migrate
+
+# Logo Author
+
+[Shutterstock](https://www.shutterstock.com/image-illustration/ink-black-white-illustration-old-ship-755181730)
