@@ -105,6 +105,12 @@ class Command(BaseCommand):
                             # update db
                             setattr(obj, key, val)
 
+                    # extract level number for class e.g. U4771 is 4771
+                    obj.level = int("".join(
+                        [x for x in list(course['class_id'].split('-',1)[0])
+                         if x.isdigit()]
+                    ))
+
                     update.diff = json.dumps(update_diff)
 
                     if options['dry_run']:

@@ -55,11 +55,11 @@
                         <div class="btn-toolbar" role="toolbar" id="extra-search-options" hidden="true" aria-label="Extra search options">
                             <div class="btn-group me-2" role="group" aria-label="First group">
                                 <select name="lvl" class="selectpicker" data-none-selected-text="Levels: all" data-style="btn-secondary" multiple data-actions-box="true">
-                                    <option>1000</option>
-                                    <option>2000</option>
-                                    <option>3000</option>
-                                    <option>4000-5000</option>
-                                    <option>6000-8000</option>
+                                    <option {% if "1000" in q_level %}selected{% endif %}>1000</option>
+                                    <option {% if "2000" in q_level %}selected{% endif %}>2000</option>
+                                    <option {% if "3000" in q_level %}selected{% endif %}>3000</option>
+                                    <option {% if "4000-5000" in q_level %}selected{% endif %}>4000-5000</option>
+                                    <option {% if "6000-8000" in q_level %}selected{% endif %}>6000-8000</option>
                                 </select>
                             </div>
                             <div class="btn-group me-2" role="group" aria-label="First group">

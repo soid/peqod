@@ -18,6 +18,7 @@ class Course(models.Model):
     course_title = models.CharField(max_length=128)
     course_subtitle = models.CharField(max_length=128, null=True)
     course_descr = models.TextField(null=True)
+    level = models.PositiveSmallIntegerField()
 
     instructor = models.ForeignKey('Instructor', null=True, on_delete=models.CASCADE)
     link = models.URLField(null=True)

@@ -1,5 +1,6 @@
 from functools import reduce
 from operator import __or__
+from typing import List
 
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max
@@ -12,6 +13,22 @@ from courses.templatetags.cutags import unslash
 
 def _get_last_updated():
     return Course.objects.order_by('-added_date')[0].added_date
+
+def _get_levels(q_level: List[str]) -> List[int]:
+    # convert level queries ['5000-7000'] into [5000, 6000, 7000]
+    result = []
+    def normz_lvl(level):
+        level = int(level) // 1000 * 1000
+        assert 0 < level < 10000
+        return level
+    for lvl in q_level:
+        if '-' in lvl:
+            lvl_s, lvl_e = lvl.split('-', 1)
+            for l in range(normz_lvl(lvl_s), normz_lvl(lvl_e)+1, 1000):
+                result.append(normz_lvl(l))
+        else:
+            result.append(normz_lvl(lvl))
+    return result
 
 def index(request):
     q_term = request.GET.get('term', '').strip()
@@ -33,8 +50,13 @@ def index(request):
     if q_department:
         course_list = course_list.filter(department=q_department)
     if q_level:
-        pass # TODO
-        #course_list = course_list.filter(l=q_level)
+        # create db filter
+        qs = []
+        print(_get_levels(q_level))
+        for lvl in _get_levels(q_level):
+            qs.append(Q(level__gte=lvl, level__lte=lvl+999))
+        qs = reduce(__or__, qs)
+        course_list = course_list.filter(qs)
     if q_day:
         qs = [Q(scheduled_days__contains=day.upper()) for day in q_day]
         qs = reduce(__or__, qs)
@@ -61,6 +83,7 @@ def index(request):
         'q_department': q_department,
         'q_query': q_query,
         'q_day': q_day,
+        'q_level': q_level,
         # content
         "course_list": course_list,
         "semesters": semesters,
