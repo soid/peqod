@@ -69,7 +69,7 @@ def index(request):
             | Q(course_subtitle__icontains=q_query))
 
     # order
-    course_list = course_list.order_by('section_key')[:60]  # TODO pagination
+    course_list = course_list.order_by('level', 'section_key')[:60]  # TODO pagination
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
