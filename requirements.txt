@@ -1,3 +1,4 @@
 Django==3.2
 mysqlclient
 django-mysql
+django-debug-toolbar
