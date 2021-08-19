@@ -77,10 +77,10 @@
                 </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 2px;">
 
 {# List courses #}
-                {% for course in course_list.all %}
+                {% for course in page_obj %}
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
@@ -141,6 +141,27 @@
                 {% endfor %}
 
             </div>
+
+        {% if page_obj.has_next or page_obj.has_previous %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 12px; text-align: center;">
+                <div class="col">
+                    <nav class="blog-pagination" aria-label="Pagination">
+                        {% if page_obj.has_next %}
+                            <a class="btn btn-outline-secondary" href="{{ page_url }}&p={{ page_obj.next_page_number }}">Next</a>
+                        {% else %}
+                            <a class="btn btn-outline-secondary disabled" href="#" aria-disabled="true">Next</a>
+                        {% endif %}
+
+                        {% if page_obj.has_previous %}
+                            <a class="btn btn-outline-secondary" href="{{ page_url }}&p={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+                        {% else %}
+                            <a class="btn btn-outline-secondary disabled" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        {% endif %}
+
         </div>
     </div>
 {% endblock %}

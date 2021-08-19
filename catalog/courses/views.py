@@ -2,6 +2,8 @@ from functools import reduce
 from operator import __or__
 from typing import List
 
+from urllib import parse
+
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max
 from django.shortcuts import render, get_object_or_404, get_list_or_404
@@ -54,7 +56,6 @@ def index(request):
     if q_level:
         # create db filter
         qs = []
-        print(_get_levels(q_level))
         for lvl in _get_levels(q_level):
             qs.append(Q(level__gte=lvl, level__lte=lvl+999))
         qs = reduce(__or__, qs)
@@ -72,7 +73,21 @@ def index(request):
 
     # order
     course_list = course_list \
-        .order_by('semester_id', 'level', 'section_key')[:60]  # TODO pagination
+        .order_by('semester_id', 'level', 'section_key')  # TODO pagination
+
+    # pagination
+    page_number = request.GET.get('p')
+    paginator = Paginator(course_list, 100)
+    page_obj = paginator.get_page(page_number)
+
+    page_url = request.path
+    if request.META['QUERY_STRING']:
+        q = parse.parse_qs(request.META['QUERY_STRING'])
+        if 'p' in q.keys():
+            del q['p']
+        page_url = page_url + '?' + parse.urlencode(q, doseq=True)
+    else:
+        page_url = page_url + '?'
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
@@ -80,6 +95,7 @@ def index(request):
 
     context = {
         'menu': 'search',
+        'page_url': page_url,
         # filters
         'q_year': q_year,
         'q_semester': q_semester,
@@ -89,6 +105,7 @@ def index(request):
         'q_level': q_level,
         # content
         "course_list": course_list,
+        'page_obj': page_obj,
         "semesters": semesters,
         "departments": departments,
         "days": utils.DAYS,
@@ -119,7 +136,7 @@ def department(request, department: str):
         .values("course_code","course_title","course_subtitle")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
                   last_taught=Max('semester_id'))\
-        .order_by('course_code', 'course_title', 'course_subtitle')
+        .order_by('level', 'course_code', 'course_title', 'course_subtitle')
 
     instructors = Instructor.objects\
         .filter(course__department=unslash(department))\
