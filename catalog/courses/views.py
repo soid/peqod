@@ -14,6 +14,7 @@ from courses.templatetags.cutags import unslash
 def _get_last_updated():
     return Course.objects.order_by('-added_date')[0].added_date
 
+
 def _get_levels(q_level: List[str]) -> List[int]:
     # convert level queries ['5000-7000'] into [5000, 6000, 7000]
     result = []
@@ -29,6 +30,7 @@ def _get_levels(q_level: List[str]) -> List[int]:
         else:
             result.append(normz_lvl(lvl))
     return result
+
 
 def index(request):
     q_term = request.GET.get('term', '').strip()
@@ -96,6 +98,7 @@ def index(request):
 
     return render(request, 'index.html', context)
 
+
 def deps_list(request):
     deps = Course.objects.values("department")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
@@ -108,6 +111,7 @@ def deps_list(request):
         'last_updated': _get_last_updated(),
     }
     return render(request, 'departments.html', context)
+
 
 def department(request, department: str):
     clss = Course.objects\
@@ -133,14 +137,26 @@ def department(request, department: str):
     }
     return render(request, 'department.html', context)
 
+
+def course_list_terms(request, course_code: str):
+    courses = get_list_or_404(Course.objects.order_by('-semester_id'), course_code=course_code)
+    context = {
+        'courses': courses,
+        'last_updated': _get_last_updated(),
+    }
+    return render(request, 'course_terms.html', context)
+
+
 def course(request, course_code: str, term: str):
     year, semester = term.split('-', 1)
     courses = get_list_or_404(Course, course_code=course_code, year=year, semester=semester)
     context = {
         'courses': courses,
+        'course_code': course_code,
         'last_updated': _get_last_updated(),
     }
     return render(request, 'course.html', context)
+
 
 def instructor_view(request, instructor_name: str):
     instr = get_object_or_404(Instructor, name=instructor_name)
@@ -160,6 +176,7 @@ def instructor_view(request, instructor_name: str):
     }
     return render(request, 'instructor.html', context)
 
+
 def updates(request):
     page_number = request.GET.get('p')
 
@@ -176,6 +193,7 @@ def updates(request):
         'last_updated': _get_last_updated(),
     }
     return render(request, 'updates.html', context)
+
 
 def about(request):
     return render(request, 'about.html', {

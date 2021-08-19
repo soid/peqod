@@ -16,6 +16,7 @@ Including another URLconf
 import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 from courses import views
 
@@ -26,6 +27,8 @@ urlpatterns = [
     path('department/<str:department>', views.department, name='department'),
     path('about', views.about, name='about'),
     path('updates', views.updates, name='updates'),
+    path('course/<str:course_code>/', RedirectView.as_view(pattern_name='course_terms')),
+    path('course/<str:course_code>', views.course_list_terms, name='course_terms'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
     path('instr/<str:instructor_name>', views.instructor_view, name='instructor'),
     # helpers

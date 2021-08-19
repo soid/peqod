@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Columbia Catalog{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            {% with courses|first as course %}
+                                <h5>{{ course.course_code }}: {{ course.course_title }}</h5>
+                                {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
+                                    <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
+                                {% endif %}
+                                <p class="card-text">
+                                    {{ course.course_descr | linebreaksbr }}
+                                </p>
+                            {% endwith %}
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Semester</th>
+                                    <th scope="col">Instructors</th>
+                                    <th scope="col">Schedule</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for course in courses %}
+                                    <tr>
+                                        <td><a href="{% url 'course' course.course_code course.get_term %}">{{ course.semester }} {{ course.year }}</a></td>
+                                        <td>{% include "instructor_include.html" with instructor=course.instructor %}</td>
+                                        <td>
+                                            {% if course.scheduled_days %}
+                                                {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

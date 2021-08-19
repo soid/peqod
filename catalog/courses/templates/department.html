@@ -28,7 +28,8 @@
                                 {% for class in classes %}
                                 <tr>
                                     <td>
-                                        <small class="text-muted">{{ class.course_code }}</small> {{ class.course_title }}
+                                        <small class="text-muted">{{ class.course_code }}</small>
+                                        <a href="{% url 'course_terms' class.course_code %}">{{ class.course_title }}</a>
                                         {% if class.course_subtitle and not class.course_subtitle in class.course_title %}
                                             <br/><small class="text-muted">{{ class.course_subtitle }}</small>
                                         {% endif %}
