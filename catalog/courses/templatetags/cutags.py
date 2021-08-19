@@ -1,6 +1,7 @@
 import datetime
 from django import template
 
+from courses.models import Course
 
 register = template.Library()
 
@@ -14,3 +15,8 @@ def removeslash(value):
 
 def unslash(value):
     return value.replace('::', '/')
+
+@register.filter(name='semester_id2term')
+def semester_id2term(value):
+    return Course.get_term_by_semester_id(value)
+

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cutags %}
 
 {% block title %}Columbia Catalog - List of Departments{% endblock %}
 
@@ -32,7 +33,7 @@
                                             <br/><small class="text-muted">{{ class.course_subtitle }}</small>
                                         {% endif %}
                                     </td>
-                                    <td>{{ class.last_taught }}</td>
+                                    <td>{{ class.last_taught|semester_id2term }}</td>
                                     <td>{{ class.count_instructors }}</td>
                                 </tr>
                                 {% endfor %}
@@ -58,7 +59,7 @@
                                 {% for instructor in instructors %}
                                 <tr>
                                     <td>{% include "instructor_include.html" %}</td>
-                                    <td>{{ instructor.last_taught }}</td>
+                                    <td>{{ instructor.last_taught|semester_id2term }}</td>
                                     <td>{{ instructor.count_classes }}</td>
                                 </tr>
                                 {% endfor %}

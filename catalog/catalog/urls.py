@@ -28,6 +28,6 @@ urlpatterns = [
     path('updates', views.updates, name='updates'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
     path('instr/<str:instructor_name>', views.instructor_view, name='instructor'),
-
+    # helpers
     path('__debug__/', include(debug_toolbar.urls)),
 ]

@@ -45,7 +45,7 @@
                                 </thead>
                                 <tbody>
                                 {% for course in courses %}
-                                    <tr>
+                                    <tr id="{{ course.id }}">
                                         <th scope="row">
                                             {{ course.course_code }}
                                         </th>

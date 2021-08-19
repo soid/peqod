@@ -69,7 +69,8 @@ def index(request):
             | Q(course_subtitle__icontains=q_query))
 
     # order
-    course_list = course_list.order_by('level', 'section_key')[:60]  # TODO pagination
+    course_list = course_list \
+        .order_by('semester_id', 'level', 'section_key')[:60]  # TODO pagination
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
@@ -113,14 +114,14 @@ def department(request, department: str):
         .filter(department=unslash(department))\
         .values("course_code","course_title","course_subtitle")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
-                  last_taught=Max('year'))\
+                  last_taught=Max('semester_id'))\
         .order_by('course_code', 'course_title', 'course_subtitle')
 
     instructors = Instructor.objects\
         .filter(course__department=unslash(department))\
-        .values("name","wikipedia_link","culpa_link","culpa_reviews_count") \
+        .values("name", "wikipedia_link","culpa_link","culpa_reviews_count") \
         .annotate(count_classes=Count('course__id', distinct=True),
-                  last_taught=Max('course__year')) \
+                  last_taught=Max('course__semester_id')) \
         .order_by("name")
 
     context = {
@@ -153,7 +154,7 @@ def instructor_view(request, instructor_name: str):
 
     context = {
         'instructor': instr,
-        'courses': courses,
+        'courses': courses.order_by('-semester_id'),
         'departments': departments,
         'last_updated': _get_last_updated(),
     }

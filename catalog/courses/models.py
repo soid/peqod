@@ -9,6 +9,7 @@ from django.db import models
 class Course(models.Model):
     year = models.PositiveSmallIntegerField()
     semester = models.CharField(max_length=6)
+    semester_id = models.PositiveSmallIntegerField()  # used for sorting by term
 
     call_number = models.IntegerField()
     class_id = models.CharField(max_length=24)
@@ -49,6 +50,30 @@ class Course(models.Model):
     def get_term(self) -> str:
         return str(self.year) + "-" + self.semester
 
+    @staticmethod
+    def get_term_by_semester_id(semester_id: int) -> str:
+        year = semester_id // 4
+        semester_i = semester_id % 4
+        sems_names = ['winter', 'spring', 'summer', 'fall']
+        semester = sems_names[semester_i]
+        return semester.capitalize() + ' ' + str(year)
+
+    def get_semester_id(self) -> int:
+        sems_names = ['winter', 'spring', 'summer', 'fall']
+        return self.year * 4 + sems_names.index(self.semester.lower())
+
+    def save(self, *args, **kwargs):
+        # derived fields: exist for using them in SQL queries
+        # extract level number for class e.g. U4771 is 4771
+        self.level = int("".join(
+            [x for x in list(self.class_id.split('-',1)[0])
+             if x.isdigit()]
+        ))
+        # set semester id
+        self.semester_id = self.get_semester_id()
+
+        super(Course, self).save(*args, **kwargs)
+
 
 class Instructor(models.Model):
     name = models.CharField(max_length=128)
@@ -59,7 +84,7 @@ class Instructor(models.Model):
     wikipedia_link = models.URLField(null=True)
 
     @staticmethod
-    def get_by_name(name: str) -> Instructor:
+    def get_by_name(name: str) -> (Instructor, bool):
         """Returns instructor and a boolean indicating if it's a new instructor"""
         obj = Instructor.objects.filter(name=name)
         if len(obj) > 0:
