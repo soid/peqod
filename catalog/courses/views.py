@@ -40,9 +40,17 @@ def index(request):
         q_semester, q_year = q_term.rsplit(" ", 1)
         q_year = int(q_year)
     else:
-        q_semester, q_year = None, None
+        interested_term = utils.Term.get_interested_term()
+        q_semester, q_year = interested_term.semester.capitalize(), interested_term.year
+        q_term = interested_term.get_term_descr()
+
     q_query = request.GET.get('q', '')
-    q_department = request.GET.get('dep', '')
+    q_department = request.GET.get('dep')
+    if not q_department:
+        if request.COOKIES.get(utils.COOKIE_LAST_SEARCHED_DEPARTMENT):
+            q_department = request.COOKIES.get(utils.COOKIE_LAST_SEARCHED_DEPARTMENT)
+        else:
+            q_department = 'Computer Science'
     q_level = request.GET.getlist('lvl', [])
     q_day = request.GET.getlist('d', [])
 
@@ -113,7 +121,9 @@ def index(request):
         'last_updated': _get_last_updated(),
     }
 
-    return render(request, 'index.html', context)
+    response = render(request, 'index.html', context)
+    response.set_cookie(utils.COOKIE_LAST_SEARCHED_DEPARTMENT, q_department)
+    return response
 
 
 def deps_list(request):
@@ -145,11 +155,18 @@ def department(request, department: str):
                   last_taught=Max('course__semester_id')) \
         .order_by("name")
 
+    last_semesters = Course.objects \
+        .filter(department=unslash(department)) \
+        .values("year", "semester") \
+        .annotate(count_classes=Count('id', distinct=True)) \
+        .order_by('-semester_id')[0:4]
+
     context = {
         'menu': 'deps',
         'department': department,
         'classes': clss,
         'instructors': instructors,
+        'last_semesters': last_semesters,
         'last_updated': _get_last_updated(),
     }
     return render(request, 'department.html', context)

@@ -13,8 +13,27 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h4>{{ department }} Department</h4>
-                            {{ classes.count }} classes
+                            Total: {{ classes.count }} classes,
                             {{ instructors.count }} instructors
+
+                        <br/>
+                            {% for semester in last_semesters %}
+                                <a href="{% url 'search' %}?dep={{ department }}&term={{ semester.semester }}+{{ semester.year }}" class="btn btn-outline-secondary btn-sm" role="button">
+                                    {{ semester.semester }} {{ semester.year }}: {{ semester.count_classes }} classes
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 12px;">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4>All Classes</h4>
 {#                            Classes#}
                             <table class="table">
                                 <thead>
@@ -43,11 +62,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 12px;">
+            <div class="col-2"></div>
+            <div class="col-8">
 {#                Instructors#}
-                <div class="col" style="margin-top: 20px;">
+                <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h4>Instructors</h4>
+                            <h4>All Instructors</h4>
                             <table class="table">
                                 <thead>
                                 <tr>

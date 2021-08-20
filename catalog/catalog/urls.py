@@ -22,7 +22,7 @@ from courses import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', views.index, name='search'),
     path('deps', views.deps_list, name='departments'),
     path('department/<str:department>', views.department, name='department'),
     path('about', views.about, name='about'),

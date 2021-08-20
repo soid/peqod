@@ -126,9 +126,6 @@
                                     {% if course.course_descr %}
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showDetails('{{ course.class_id }}')">Show more</button>
                                     {% endif %}
-                                    <a href="{{ course.link }}" class="btn btn-outline-secondary" role="button">
-                                        DoC
-                                    </a>
                                     <a href="{% url 'course' course.course_code course.get_term %}" class="btn btn-outline-secondary" role="button">
                                         Details
                                     </a>
