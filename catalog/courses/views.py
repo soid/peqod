@@ -78,6 +78,7 @@ def index(request):
             | Q(instructor__name__icontains=q_query)
             | Q(course_title__icontains=q_query)
             | Q(course_subtitle__icontains=q_query))
+    q_extra_options = q_level or q_day
 
     # order
     course_list = course_list \
@@ -111,6 +112,7 @@ def index(request):
         'q_query': q_query,
         'q_day': q_day,
         'q_level': q_level,
+        'q_extra_options': q_extra_options,
         # content
         "course_list": course_list,
         'page_obj': page_obj,

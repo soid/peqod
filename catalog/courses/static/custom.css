@@ -29,3 +29,8 @@
     display:flex;
     flex-direction:column;
 }
+
+.peqod-search-toolbar {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
