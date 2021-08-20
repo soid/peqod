@@ -3,58 +3,56 @@
 {% block title %}Columbia Catalog{% endblock %}
 
 {% block content %}
-    <div class="py-5 bg-light">
+    <div class="py-1 bg-light">
         <div class="container">
             {% for course in courses %}
             <div class="row">
-                <div class="col-2"></div>
-                <div class="col-8">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                {% if forloop.first %}
-                                    <h5>{{ course.course_code }}: {{ course.course_title }}</h5>
-                                    {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
-                                        <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
-                                    {% endif %}
-                                    {% if course.course_descr %}
-                                    <p class="card-text">
-                                        {{ course.course_descr | linebreaksbr }}
-                                    </p>
-                                    {% endif %}
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            {% if forloop.first %}
+                                <h5>{{ course.course_code }}: {{ course.course_title }}</h5>
+                                {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
+                                    <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                                 {% endif %}
-                                <ul class="list-group list-group-flush">
-                                    {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
-                                    <li class="list-group-item">
-                                        <div class="fw-bold">{{ course.course_subtitle }}</div>
-                                    </li>
+                                {% if course.course_descr %}
+                                <p class="card-text">
+                                    {{ course.course_descr | linebreaksbr }}
+                                </p>
+                                {% endif %}
+                            {% endif %}
+                            <ul class="list-group list-group-flush">
+                                {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
+                                <li class="list-group-item">
+                                    <div class="fw-bold">{{ course.course_subtitle }}</div>
+                                </li>
+                                {% endif %}
+                                <li class="list-group-item">
+                                    {% if course.instructor %}
+                                    Instructor: {% include "instructor_include.html" with instructor=course.instructor %}
                                     {% endif %}
-                                    <li class="list-group-item">
-                                        {% if course.instructor %}
-                                        Instructor: {% include "instructor_include.html" with instructor=course.instructor %}
-                                        {% endif %}
-                                    </li>
-                                    {% if course.scheduled_days %}
-                                    <li class="list-group-item">
-                                        Days: {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
-                                    </li>
-                                    {% endif %}
-                                    {% if course.location %}
-                                    <li class="list-group-item">
-                                        Location: {{ course.location }}
-                                    </li>
-                                    {% endif %}
-                                    <li class="list-group-item">
-                                        Department: {{ course.department }}
-                                    </li>
-                                    <li class="list-group-item">
-                                        Points: {{ course.points }}
-                                    </li>
-                                    <li class="list-group-item">
-                                        Call number: {{ course.call_number }}
-                                    </li>
-                                </ul>
-                            </div>
+                                </li>
+                                {% if course.scheduled_days %}
+                                <li class="list-group-item">
+                                    Days: {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
+                                </li>
+                                {% endif %}
+                                {% if course.location %}
+                                <li class="list-group-item">
+                                    Location: {{ course.location }}
+                                </li>
+                                {% endif %}
+                                <li class="list-group-item">
+                                    Department: {{ course.department }}
+                                </li>
+                                <li class="list-group-item">
+                                    Points: {{ course.points }}
+                                </li>
+                                <li class="list-group-item">
+                                    Call number: {{ course.call_number }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

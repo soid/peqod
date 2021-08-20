@@ -5,11 +5,11 @@
 
 {% block content %}
 
-    <div class="py-5 bg-light">
+    <div class="py-1 bg-light">
         <div class="container">
             <div class="row">
-                <div class="col-2"></div>
-                    <div class="col-8">
+                <div class="col-md-2"></div>
+                    <div class="col-md-8">
                         {% for update in page_obj %}
                             {% ifchanged update.added_date %}
                                 {% if not forloop.first %}</div>{% endif %}

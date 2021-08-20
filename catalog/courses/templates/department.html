@@ -4,97 +4,91 @@
 {% block title %}Columbia Catalog - List of Departments{% endblock %}
 
 {% block content %}
-<div class="py-5 bg-light">
+<div class="py-1 bg-light">
     <div class="container">
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4>{{ department }} Department</h4>
-                            Total: {{ classes.count }} classes,
-                            {{ instructors.count }} instructors
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4>{{ department }} Department</h4>
+                        Total: {{ classes.count }} classes,
+                        {{ instructors.count }} instructors
 
-                        <br/>
-                            {% for semester in last_semesters %}
-                                <a href="{% url 'search' %}?dep={{ department }}&term={{ semester.semester }}+{{ semester.year }}" class="btn btn-outline-secondary btn-sm" role="button">
-                                    {{ semester.semester }} {{ semester.year }}: {{ semester.count_classes }} classes
-                                </a>
-                            {% endfor %}
-                        </div>
+                    <br/>
+                        {% for semester in last_semesters %}
+                            <a href="{% url 'search' %}?dep={{ department }}&term={{ semester.semester }}+{{ semester.year }}" class="btn btn-outline-secondary btn-sm" role="button">
+                                {{ semester.semester }} {{ semester.year }}: {{ semester.count_classes }} classes
+                            </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
         <div class="row" style="margin-top: 12px;">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4>All Classes</h4>
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4>All Classes</h4>
 {#                            Classes#}
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Class</th>
-                                    <th scope="col">Last Taught</th>
-                                    <th scope="col">Instructors</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for class in classes %}
-                                <tr>
-                                    <td>
-                                        <small class="text-muted">{{ class.course_code }}</small>
-                                        <a href="{% url 'course_terms' class.course_code %}">{{ class.course_title }}</a>
-                                        {% if class.course_subtitle and not class.course_subtitle in class.course_title %}
-                                            <br/><small class="text-muted">{{ class.course_subtitle }}</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ class.last_taught|semester_id2term }}</td>
-                                    <td>{{ class.count_instructors }}</td>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Class</th>
+                                <th scope="col">Last Taught</th>
+                                <th scope="col">Instructors</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for class in classes %}
+                            <tr>
+                                <td>
+                                    <small class="text-muted">{{ class.course_code }}</small>
+                                    <a href="{% url 'course_terms' class.course_code %}">{{ class.course_title }}</a>
+                                    {% if class.course_subtitle and not class.course_subtitle in class.course_title %}
+                                        <br/><small class="text-muted">{{ class.course_subtitle }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ class.last_taught|semester_id2term }}</td>
+                                <td>{{ class.count_instructors }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="row" style="margin-top: 12px;">
-            <div class="col-2"></div>
-            <div class="col-8">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
 {#                Instructors#}
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4>All Instructors</h4>
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Instructor</th>
-                                    <th scope="col">Last Taught</th>
-                                    <th scope="col">Classes</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for instructor in instructors %}
-                                <tr>
-                                    <td>{% include "instructor_include.html" %}</td>
-                                    <td>{{ instructor.last_taught|semester_id2term }}</td>
-                                    <td>{{ instructor.count_classes }}</td>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4>All Instructors</h4>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Instructor</th>
+                                <th scope="col">Last Taught</th>
+                                <th scope="col">Classes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for instructor in instructors %}
+                            <tr>
+                                <td>{% include "instructor_include.html" %}</td>
+                                <td>{{ instructor.last_taught|semester_id2term }}</td>
+                                <td>{{ instructor.count_classes }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
+{#                End of Instructors#}
             </div>
         </div>
     </div>
