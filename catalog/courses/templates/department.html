@@ -12,20 +12,23 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h4>{{ department }} Department</h4>
-                        Total: {{ classes.count }} classes,
-                        {{ instructors.count }} instructors
+                        <p>
+                            Total: <a href="#classes">{{ classes.count }}</a> classes,
+                            <a href="#instructors">{{ instructors.count }}</a> instructors
+                        </p>
 
-                    <br/>
+                        <p>
                         {% for semester in last_semesters %}
-                            <a href="{% url 'search' %}?dep={{ department }}&term={{ semester.semester }}+{{ semester.year }}" class="btn btn-outline-secondary btn-sm" role="button">
+                            <a href="{% url 'search' %}?dep={{ department|urlencode }}&term={{ semester.semester }}+{{ semester.year }}" class="btn btn-outline-secondary btn-sm" role="button">
                                 {{ semester.semester }} {{ semester.year }}: {{ semester.count_classes }} classes
                             </a>
                         {% endfor %}
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-top: 12px;">
+        <div id="classes" class="row" style="margin-top: 12px;">
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <div class="card shadow-sm">
@@ -61,7 +64,7 @@
             </div>
         </div>
 
-        <div class="row" style="margin-top: 12px;">
+        <div id="instructors" class="row" style="margin-top: 12px;">
             <div class="col-md-2"></div>
             <div class="col-md-8">
 {#                Instructors#}
