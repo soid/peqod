@@ -35,7 +35,7 @@ class Course(models.Model):
     location = models.CharField(max_length=128, null=True)
     # method_of_instruction
     # open_to
-    points = models.CharField(max_length=6)
+    points = models.CharField(max_length=7)
     # prerequisites
     # type
 
@@ -69,6 +69,8 @@ class Course(models.Model):
             [x for x in list(self.class_id.split('-',1)[0])
              if x.isdigit()]
         ))
+        if self.level > 10000:
+            self.level = self.level // 10
         # set semester id
         self.semester_id = self.get_semester_id()
 
@@ -147,3 +149,9 @@ class CatalogUpdate(models.Model):
 
     def is_T_CHANGED_LOCATION(self):
         return self.check_typ(CatalogUpdate.T_CHANGED_LOCATION)
+
+
+class CatalogImports(models.Model):
+    """ Keeping track of what and when JSON files were imported"""
+    term = models.CharField(max_length=12)
+    last_modified_date = models.DateTimeField()
