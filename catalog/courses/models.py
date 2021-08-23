@@ -46,6 +46,13 @@ class Course(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['year', 'semester', 'call_number'], name='class per semester')
         ]
+        indexes = [
+            models.Index(fields=['department']),
+            models.Index(fields=['department', 'year', 'semester']),
+            models.Index(fields=['course_code', 'year', 'semester']),
+            models.Index(fields=['instructor']),
+            models.Index(fields=['added_date']),
+        ]
 
     def get_term(self) -> str:
         return str(self.year) + "-" + self.semester
@@ -85,6 +92,11 @@ class Instructor(models.Model):
     culpa_reviews = models.JSONField(null=True)
     wikipedia_link = models.URLField(null=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['name']),
+        ]
+
     @staticmethod
     def get_by_name(name: str) -> (Instructor, bool):
         """Returns instructor and a boolean indicating if it's a new instructor"""
@@ -94,6 +106,7 @@ class Instructor(models.Model):
         else:
             obj = Instructor(name=name)
             return obj, True
+
 
 class CatalogUpdate(models.Model):
     T_NEW_CLASS = 1
@@ -109,6 +122,11 @@ class CatalogUpdate(models.Model):
     related_class = models.ForeignKey('Course', null=True, on_delete=models.CASCADE)
     related_instructor = models.ForeignKey('Instructor', null=True, on_delete=models.CASCADE)
     diff = models.TextField(null=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['added_date']),
+        ]
 
     def add_typ(self, typ_to_add: int):
         assert typ_to_add > 0

@@ -82,6 +82,7 @@ def index(request):
 
     # order
     course_list = course_list \
+        .prefetch_related('instructor') \
         .order_by('semester_id', 'level', 'section_key')  # TODO pagination
 
     # pagination
@@ -175,7 +176,8 @@ def department(request, department: str):
 
 
 def course_list_terms(request, course_code: str):
-    courses = get_list_or_404(Course.objects.order_by('-semester_id'), course_code=course_code)
+    courses = get_list_or_404(Course.objects.prefetch_related('instructor').order_by('-semester_id'),
+                              course_code=course_code)
     context = {
         'courses': courses,
         'last_updated': _get_last_updated(),
@@ -185,7 +187,8 @@ def course_list_terms(request, course_code: str):
 
 def course(request, course_code: str, term: str):
     year, semester = term.split('-', 1)
-    courses = get_list_or_404(Course, course_code=course_code, year=year, semester=semester)
+    courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
+                              course_code=course_code, year=year, semester=semester)
     context = {
         'courses': courses,
         'course_code': course_code,
@@ -217,6 +220,7 @@ def updates(request):
     page_number = request.GET.get('p')
 
     updates = CatalogUpdate.objects \
+        .prefetch_related('related_instructor', 'related_class') \
         .order_by('-added_date') \
         .prefetch_related('related_class')
 

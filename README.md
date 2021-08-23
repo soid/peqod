@@ -22,6 +22,10 @@ In Docker contrainer you need to mount first catalog to
     python catalog/manage.py makemigrations
     python catalog/manage.py migrate
 
+Squash migrations:
+
+    python catalog/manage.py squashmigrations courses 0005 0011
+
 # Logo Author
 
 [Shutterstock](https://www.shutterstock.com/image-illustration/ink-black-white-illustration-old-ship-755181730)
