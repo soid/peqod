@@ -51,6 +51,9 @@
                                 </li>
                                 <li class="list-group-item">
                                     Call number: {{ course.call_number }}
+                                    {% if is_latest_term %}
+                                    (<a href="{{ course.link }}">View in Directory of Classes</a>)
+                                    {% endif %}
                                 </li>
                             </ul>
                         </div>

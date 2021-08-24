@@ -187,11 +187,23 @@ def course_list_terms(request, course_code: str):
 
 def course(request, course_code: str, term: str):
     year, semester = term.split('-', 1)
+    year = int(year)
     courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
                               course_code=course_code, year=year, semester=semester)
+    last_terms = utils.Term.get_last_four_terms()
+    course_term = utils.Term(year, semester)
+    print(last_terms, course_term)
+
+    # course_term = filter(lambda x: x.year == year and x.semester == semester,
+    #                      last_terms)
+    # is_latest_term = next(course_term, None) is not None
+    is_latest_term = course_term in last_terms
+    print("is_latest_term", is_latest_term)
+
     context = {
         'courses': courses,
         'course_code': course_code,
+        'is_latest_term': is_latest_term,
         'last_updated': _get_last_updated(),
     }
     return render(request, 'course.html', context)

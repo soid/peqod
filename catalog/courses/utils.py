@@ -21,6 +21,12 @@ class Term:
         assert semester in ['spring', 'fall', 'summer']
         self.semester = semester
 
+    def __repr__(self):
+        return "Term(" + str(self.year) + ", " + self.semester + ")"
+
+    def __eq__(self, other):
+        return self.year == other.year and self.semester == other.semester
+
     @staticmethod
     def get_interested_term():
         """ Get currently interested term based on current date,
