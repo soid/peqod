@@ -50,6 +50,7 @@ class Course(models.Model):
             models.Index(fields=['department']),
             models.Index(fields=['department', 'year', 'semester']),
             models.Index(fields=['course_code', 'year', 'semester']),
+            models.Index(fields=['call_number', 'year', 'semester']),
             models.Index(fields=['instructor']),
             models.Index(fields=['added_date']),
         ]
@@ -122,6 +123,9 @@ class CatalogUpdate(models.Model):
     related_class = models.ForeignKey('Course', null=True, on_delete=models.CASCADE)
     related_instructor = models.ForeignKey('Instructor', null=True, on_delete=models.CASCADE)
     diff = models.TextField(null=True)
+
+    year = models.PositiveSmallIntegerField()
+    semester = models.CharField(max_length=6)
 
     class Meta:
         indexes = [

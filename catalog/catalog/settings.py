@@ -88,6 +88,9 @@ DATABASES = {
         'PASSWORD': 'password2',
         'HOST': 'db',
         'PORT': 3306,
+        "OPTIONS": {
+            "init_command": "SET SESSION group_concat_max_len = 1000000;"
+        }
     }
 }
 

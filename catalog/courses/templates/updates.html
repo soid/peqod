@@ -18,19 +18,42 @@
                             {% endifchanged %}
                             <div class="d-flex text-muted pt-3">
                                 <p class="pb-3 mb-0 small lh-sm border-bottom">
+                                    {% if update.related_class %}
                                     <strong class="d-block text-gray-dark" id="update{{ update.id }}">
                                         <a href="{% url 'course' update.related_class.course_code update.related_class.get_term %}" role="button">
                                         {{ update.related_class.course_code }}: {{ update.related_class.course_title }}
                                         </a>
                                         ({{ update.related_class.semester }} {{ update.related_class.year }})
                                     </strong>
-                                    {% if update.is_T_NEW_CLASS %}<span class="badge rounded-pill bg-primary">New class</span><br/>{% endif %}
+                                    {% endif %}
+                                    {% if update.is_T_NEW_CLASS %}
+                                        <span class="badge rounded-pill bg-primary">New class</span><br/>
+                                    {% endif %}
                                     {% if update.is_T_NEW_INSTRUCTOR %}
                                         New instructor
                                         <span class="badge rounded-pill bg-success">{{ update.related_instructor.name }}</span>
                                         <br/>
                                     {% endif %}
-                                    {% if update.is_T_DELETED_CLASS %}Removed class<br/>{% endif %}
+                                    {% if update.is_T_DELETED_CLASS %}
+                                        <span class="badge rounded-pill bg-danger">Removed class</span><br/>
+                                        <strong class="d-block text-gray-dark">
+                                            {{ update.get_diff.course_code }}: {{ update.get_diff.course_title }}
+                                            ({{ update.semester }} {{ update.year }})
+                                        </strong>
+                                        {% if update.get_diff.course_subtitle and not update.get_diff.course_subtitle in update.get_diff.course_title %}
+                                            {{ update.get_diff.course_subtitle }}
+                                        {% endif %}
+                                        (Call Number: {{ update.get_diff.call_number }})
+                                        {% if update.get_diff.scheduled_days %}
+                                            <br/>Days: {{ update.get_diff.scheduled_days }}
+                                            {% if update.get_diff.scheduled_time_start %}
+                                                {{ update.get_diff.scheduled_time_start }} - {{ update.get_diff.scheduled_time_end }}
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if update.get_diff.instructor %}
+                                            <br/>Instructor: {{ update.get_diff.instructor }}
+                                        {% endif %}
+                                    {% endif %}
                                     {% if update.is_T_CHANGED_TIME %}
                                         Changed schedule
                                         {% if update.get_diff.old_scheduled_days or update.get_diff.old_scheduled_time_start %}

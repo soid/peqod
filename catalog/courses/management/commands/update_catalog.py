@@ -3,12 +3,14 @@ from datetime import datetime, date, timezone
 import json
 from os import listdir
 from os.path import getmtime, dirname, abspath
+from typing import Dict, List
 
 from django.core.management.base import BaseCommand
 from django.db.utils import DataError, IntegrityError
 from django.db.utils import OperationalError
 from django.core.exceptions import ValidationError
 
+from courses import utils
 from courses.models import Course, Instructor, CatalogUpdate, CatalogImports
 
 
@@ -59,6 +61,16 @@ class Command(BaseCommand):
             semester = tmp[1]
             self.logger.info("Running for %s", term)
 
+            # list current call numbers in db, so we can remove those not in json
+            cur_call_numbers = Course.objects\
+                .filter(year=year, semester=semester)\
+                .values('department')\
+                .annotate(call_numbers=utils.Concat('call_number'))
+            cur_call_numbers: Dict[str, List[int]] = {
+                item['department']: set(int(x) for x in item['call_numbers'].split(','))
+                for item in cur_call_numbers
+            }
+
             import_filename = self.data_files_location \
                               + str(year) + "-" + semester.capitalize() + ".json"
             num_lines = sum(1 for _ in open(import_filename))
@@ -77,6 +89,8 @@ class Command(BaseCommand):
                                                 call_number=course['call_number'])
                     update = CatalogUpdate()
                     update.added_date = update_date
+                    update.year = year
+                    update.semester = semester
                     update_diff = {}
                     if len(obj) > 0:
                         obj = obj[0]
@@ -123,7 +137,11 @@ class Command(BaseCommand):
                             if val == '':
                                 val = None
                             # adjust CatalogUpdate
-                            if val != getattr(obj, key, None):
+                            val_db = getattr(obj, key, None)
+                            if type(val) != type(val_db) and val_db is not None:
+                                # cast to the same type as in db
+                                val = type(val_db)(val)
+                            if val != val_db:
                                 flag_add_diff = True
                                 if key.startswith('scheduled_'):
                                     update.add_typ(CatalogUpdate.T_CHANGED_TIME)
@@ -141,6 +159,11 @@ class Command(BaseCommand):
                             setattr(obj, key, val)
 
                     update.diff = json.dumps(update_diff)
+
+                    # remove from list of call numbers in current db
+                    if course['department'] in cur_call_numbers.keys():
+                        if int(course['call_number']) in cur_call_numbers[course['department']]:
+                            cur_call_numbers[course['department']].remove(int(course['call_number']))
 
                     if options['dry_run']:
                         if update.typ:
@@ -165,11 +188,48 @@ class Command(BaseCommand):
             ci.last_modified_date = modification_dt
             ci.save()
 
-            self.logger.info("Finished % classes", num)
-            # TODO: delete classes absent in the json file
+            # delete classes absent in the json file
+            deleted_count = 0
+            deleted_ids = []
+            for department, cns in cur_call_numbers.items():
+                for call_number in cns:
+                    course = Course.objects.filter(year=year, semester=semester,
+                                                   department=department, call_number=call_number).first()
+                    if not course:
+                        self.logger.warning("Couldn't find class even though it's in current db list. "
+                                            "Department: %s; call number: %d", department, call_number)
+
+                    update = CatalogUpdate()
+                    update.add_typ(CatalogUpdate.T_DELETED_CLASS)
+                    update.added_date = update_date
+                    update.year = year
+                    update.semester = semester
+                    update_diff = {
+                        'course_title': course.course_title,
+                        'course_subtitle': course.course_subtitle,
+                        'course_code': course.course_code,
+                        'call_number': course.call_number,
+                        'scheduled_days': course.scheduled_days,
+                    }
+                    if course.scheduled_time_start:
+                        update_diff['scheduled_time_start'] = course.scheduled_time_start.isoformat()
+                    if course.scheduled_time_end:
+                        update_diff['scheduled_time_end'] = course.scheduled_time_end.isoformat()
+                    if course.instructor:
+                        update.related_instructor = course.instructor
+                    update.diff = json.dumps(update_diff)
+
+                    update.save()
+                    course.delete()
+                    deleted_ids.append(course.call_number)
+                    deleted_count += 1
+            self.logger.info("Deleted %d classes (%s)", deleted_count, deleted_ids)
+            self.logger.info("Finished updating %d classes for %s", num, term)
+
         self.logger.info('Done.')
 
     def get_changed_semesters(self):
+        """Find JSON files for semesters that were changed"""
         result = []
         for fn in listdir(self.data_files_location):
             if fn.endswith('.json'):

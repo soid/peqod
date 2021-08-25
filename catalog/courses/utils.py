@@ -1,5 +1,7 @@
 import datetime
 
+from django.db.models import Aggregate, CharField
+
 DAYS = [
     ('m', 'Monday'),
     ('t', 'Tuesday'),
@@ -69,3 +71,16 @@ class Term:
             year -= 1
             sem_num = len(Term.SEMESTER_NAMES) - 1
         return Term(year, Term.SEMESTER_NAMES[sem_num])
+
+
+# taken from https://stackoverflow.com/questions/10340684/group-concat-equivalent-in-django
+class Concat(Aggregate):
+    function = 'GROUP_CONCAT'
+    template = '%(function)s(%(distinct)s%(expressions)s)'
+
+    def __init__(self, expression, distinct=False, **extra):
+        super(Concat, self).__init__(
+            expression,
+            distinct='DISTINCT ' if distinct else '',
+            output_field=CharField(),
+            **extra)
