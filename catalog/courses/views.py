@@ -192,13 +192,8 @@ def course(request, course_code: str, term: str):
                               course_code=course_code, year=year, semester=semester)
     last_terms = utils.Term.get_last_four_terms()
     course_term = utils.Term(year, semester)
-    print(last_terms, course_term)
 
-    # course_term = filter(lambda x: x.year == year and x.semester == semester,
-    #                      last_terms)
-    # is_latest_term = next(course_term, None) is not None
     is_latest_term = course_term in last_terms
-    print("is_latest_term", is_latest_term)
 
     context = {
         'courses': courses,
