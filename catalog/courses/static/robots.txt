@@ -1,0 +1,8 @@
+# This website is made primarily for Columbia University community
+# and we generally don't want any traffic from search engines.
+
+User-agent: *
+Disallow: /course/
+Disallow: /instr/
+Disallow: /updates
+Allow: /about
