@@ -70,7 +70,14 @@
                                         <br/>
                                     {% endif %}
                                     {% if update.is_T_CHANGED_DESCRIPTION %}Changed description<br/>{% endif %}
-                                    {% if update.is_T_CHANGED_LOCATION %}Changed location<br/>{% endif %}
+                                    {% if update.is_T_CHANGED_LOCATION %}
+                                        Changed location
+                                        {% if update.get_diff.old_location %}
+                                        <span class="badge rounded-pill bg-danger">-{{ update.get_diff.old_location }}</span>
+                                        {% endif %}
+                                        <span class="badge rounded-pill bg-success">-{{ update.get_diff.new_location }}</span>
+                                        <br/>
+                                    {% endif %}
                                 </p>
                             </div>
                         {% endfor %}
