@@ -28,6 +28,7 @@
                             </div>
                             <div class="btn-group me-2 peqod-search-toolbar" role="group" aria-label="First group">
                                 <select name="dep" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                    <option value="ALL" {% if q_department == "ALL" %}selected{% endif %}>– All Departments –</option>
                                     {% for dep in departments %}
                                         <option {% if q_department == dep.department %}selected{% endif %}>
                                             {{ dep.department }}

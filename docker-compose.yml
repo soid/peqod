@@ -13,6 +13,14 @@ services:
       MYSQL_PASSWORD: 'password1'
       MYSQL_ROOT_PASSWORD: 'password2'
 
+  cache:
+    image: memcached
+    ports:
+      - "11211:11211"
+    entrypoint:
+      - memcached
+      - -m 64
+
   web:
     build: .
     command: python catalog/manage.py runserver --insecure 0.0.0.0:8002

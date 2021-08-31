@@ -4,17 +4,27 @@ from typing import List
 
 from urllib import parse
 
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max
 from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.views.decorators.cache import cache_page
 
 from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 from courses.templatetags.cutags import unslash
 
 
+CACHE_GET_LAST_UPDATED = "_get_last_updated"
+CACHE_DEP_LIST_PAGE = "department_list_page"
+
+
 def _get_last_updated():
-    return Course.objects.order_by('-added_date')[0].added_date
+    result = cache.get(CACHE_GET_LAST_UPDATED)
+    if not result:
+        result = Course.objects.order_by('-added_date')[0].added_date
+        cache.set(CACHE_GET_LAST_UPDATED, result, 60*60 * 24)  # 24 hours cache
+    return result
 
 
 def _get_levels(q_level: List[str]) -> List[int]:
@@ -60,7 +70,8 @@ def index(request):
     if q_term:
         course_list = course_list.filter(year=q_year).filter(semester=q_semester)
     if q_department:
-        course_list = course_list.filter(department=q_department)
+        if q_department != "ALL":
+            course_list = course_list.filter(department=q_department)
     if q_level:
         # create db filter
         qs = []
@@ -76,6 +87,7 @@ def index(request):
         course_list = course_list.filter(
             Q(course_descr__icontains=q_query)
             | Q(instructor__name__icontains=q_query)
+            | Q(course_code__icontains=q_query)
             | Q(course_title__icontains=q_query)
             | Q(course_subtitle__icontains=q_query))
     q_extra_options = q_level or q_day
@@ -83,7 +95,7 @@ def index(request):
     # order
     course_list = course_list \
         .prefetch_related('instructor') \
-        .order_by('semester_id', 'level', 'section_key')  # TODO pagination
+        .order_by('semester_id', 'level', 'section_key')
 
     # pagination
     page_number = request.GET.get('p')
@@ -129,6 +141,8 @@ def index(request):
     return response
 
 
+@cache_page(60 * 60 * 24, key_prefix=
+CACHE_DEP_LIST_PAGE)
 def deps_list(request):
     deps = Course.objects.values("department")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
@@ -143,30 +157,30 @@ def deps_list(request):
     return render(request, 'departments.html', context)
 
 
-def department(request, department: str):
+def department(request, department_name: str):
     clss = Course.objects\
-        .filter(department=unslash(department))\
+        .filter(department=unslash(department_name))\
         .values("course_code","course_title","course_subtitle")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
                   last_taught=Max('semester_id'))\
         .order_by('level', 'course_code', 'course_title', 'course_subtitle')
 
     instructors = Instructor.objects\
-        .filter(course__department=unslash(department))\
+        .filter(course__department=unslash(department_name))\
         .values("name", "wikipedia_link","culpa_link","culpa_reviews_count") \
         .annotate(count_classes=Count('course__id', distinct=True),
                   last_taught=Max('course__semester_id')) \
         .order_by("name")
 
     last_semesters = Course.objects \
-        .filter(department=unslash(department)) \
+        .filter(department=unslash(department_name)) \
         .values("year", "semester") \
         .annotate(count_classes=Count('id', distinct=True)) \
         .order_by('-semester_id')[0:4]
 
     context = {
         'menu': 'deps',
-        'department': department,
+        'department': department_name,
         'classes': clss,
         'instructors': instructors,
         'last_semesters': last_semesters,
@@ -212,7 +226,7 @@ def instructor_view(request, instructor_name: str):
     departments = courses \
         .values('department') \
         .distinct() \
-        .values_list('department', flat = True)
+        .values_list('department', flat=True)
 
     context = {
         'instructor': instr,
@@ -242,6 +256,7 @@ def updates(request):
     return render(request, 'updates.html', context)
 
 
+@cache_page(60*60*24)
 def about(request):
     return render(request, 'about.html', {
         'menu': 'about',

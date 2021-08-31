@@ -5,12 +5,13 @@ from os import listdir
 from os.path import getmtime, dirname, abspath
 from typing import Dict, List
 
+from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.db.utils import DataError, IntegrityError
 from django.db.utils import OperationalError
 from django.core.exceptions import ValidationError
 
-from courses import utils
+from courses import utils, views
 from courses.models import Course, Instructor, CatalogUpdate, CatalogImports
 
 
@@ -184,7 +185,9 @@ class Command(BaseCommand):
 
             ts = getmtime(import_filename)
             modification_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
-            ci, created = CatalogImports.objects.get_or_create(term=term, last_modified_date=modification_dt)
+            ci = CatalogImports.objects.filter(term=term).first()
+            if not ci:
+                ci = CatalogImports(term=term)
             ci.last_modified_date = modification_dt
             ci.save()
 
@@ -226,6 +229,8 @@ class Command(BaseCommand):
             self.logger.info("Deleted %d classes (%s)", deleted_count, deleted_ids)
             self.logger.info("Finished updating %d classes for %s", num, term)
 
+        cache.delete_many([views.CACHE_GET_LAST_UPDATED,
+                           views.CACHE_DEP_LIST_PAGE])
         self.logger.info('Done.')
 
     def get_changed_semesters(self):

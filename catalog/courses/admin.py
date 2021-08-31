@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Instructor, CatalogUpdate
+from .models import Course, Instructor, CatalogUpdate, CatalogImports
 
 
 class CatalogUpdateAdmin(admin.ModelAdmin):
@@ -8,4 +8,5 @@ class CatalogUpdateAdmin(admin.ModelAdmin):
 
 admin.site.register(Course)
 admin.site.register(Instructor)
+admin.site.register(CatalogImports)
 admin.site.register(CatalogUpdate, CatalogUpdateAdmin)
