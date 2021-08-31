@@ -19,6 +19,7 @@
                         <div class="btn-toolbar" role="toolbar" aria-label="Search options">
                             <div class="btn-group me-2" role="group" aria-label="First group">
                                 <select name="term" class="selectpicker" data-style="btn-secondary" data-live-search="true">
+                                    <option value="ALL" {% if q_term == "ALL" %}selected{% endif %}>– All Semesters –</option>
                                     {% for term in semesters %}
                                         <option {% if q_year == term.year and q_semester == term.semester %}selected{% endif %}>
                                             {{ term.semester }} {{ term.year }}
@@ -100,6 +101,11 @@
                                 {{ course.course_descr | linebreaksbr }}
                                 {% endif %}
                             <ul class="list-group list-group-flush">
+                                {% if q_term == "ALL" %}
+                                <li class="list-group-item">
+                                    {{ course.semester }} {{ course.year }}
+                                </li>
+                                {% endif %}
                                 {% if course.scheduled_time_start %}
                                 <li class="list-group-item">
                                     {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}

@@ -47,8 +47,11 @@ def _get_levels(q_level: List[str]) -> List[int]:
 def index(request):
     q_term = request.GET.get('term', '').strip()
     if q_term:
-        q_semester, q_year = q_term.rsplit(" ", 1)
-        q_year = int(q_year)
+        if q_term != "ALL":
+            q_semester, q_year = q_term.rsplit(" ", 1)
+            q_year = int(q_year)
+        else:
+            q_year = q_semester = None
     else:
         interested_term = utils.Term.get_interested_term()
         q_semester, q_year = interested_term.semester.capitalize(), interested_term.year
@@ -67,7 +70,7 @@ def index(request):
     course_list = Course.objects
 
     # filter
-    if q_term:
+    if q_term and q_term != "ALL":
         course_list = course_list.filter(year=q_year).filter(semester=q_semester)
     if q_department:
         if q_department != "ALL":
@@ -121,6 +124,7 @@ def index(request):
         # filters
         'q_year': q_year,
         'q_semester': q_semester,
+        'q_term': q_term,
         'q_department': q_department,
         'q_query': q_query,
         'q_day': q_day,
