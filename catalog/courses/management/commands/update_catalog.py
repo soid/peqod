@@ -201,6 +201,7 @@ class Command(BaseCommand):
                     if not course:
                         self.logger.warning("Couldn't find class even though it's in current db list. "
                                             "Department: %s; call number: %d", department, call_number)
+                        continue
 
                     update = CatalogUpdate()
                     update.add_typ(CatalogUpdate.T_DELETED_CLASS)
