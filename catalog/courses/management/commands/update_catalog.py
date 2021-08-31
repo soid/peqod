@@ -208,6 +208,7 @@ class Command(BaseCommand):
                     update.added_date = update_date
                     update.year = year
                     update.semester = semester
+                    update.department = department
                     update_diff = {
                         'course_title': course.course_title,
                         'course_subtitle': course.course_subtitle,

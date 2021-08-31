@@ -260,7 +260,6 @@ def updates(request):
     return render(request, 'updates.html', context)
 
 
-@cache_page(60*60*24)
 def about(request):
     return render(request, 'about.html', {
         'menu': 'about',

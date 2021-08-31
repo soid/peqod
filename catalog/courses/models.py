@@ -124,6 +124,8 @@ class CatalogUpdate(models.Model):
     related_instructor = models.ForeignKey('Instructor', null=True, on_delete=models.CASCADE)
     diff = models.TextField(null=True)
 
+    department = models.CharField(max_length=128)
+
     year = models.PositiveSmallIntegerField()
     semester = models.CharField(max_length=6)
 
