@@ -13,40 +13,50 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h4>About Peqod</h4>
-                                <p>
-                                    TODO: explain the purpose of the project.
-                                </p>
-                                <p>
-                                    The project is based on the data from
-                                    <a class="btn-link" href="https://github.com/soid/columbia-catalog-data">columbia-catalog-data</a>
-                                    available in JSON and CSV formats.
-                                </p>
+                                <p>Peqod is an unofficial directory of classes for Columbia University in the city of
+                                    New York. We crawl the official catalog, enrich it with useful information, and
+                                    present it in a subjectively better, more useful form.</p>
+                                <p>The project aims to help students plan their curriculum, explore the catalog, and
+                                    find related links (e.g. instructor reviews, Wikipedia pages, etc). A secondary goal
+                                    is to provide an open-source platform for experimenting with the catalog. The
+                                    website is based on the data from
+                                    <a href="https://github.com/soid/columbia-catalog-data">columbia-catalog-data</a>
+                                    available in JSON and CSV formats. Everyone can download the data in a convenient
+                                    format and play with it using their favorite data analysis tool (even Excel). The
+                                    results can make an interesting Reddit post or just help the author in their goals.
+                                    Another possibility is to contribute to the <a href="https://github.com/soid/peqod">source
+                                        code</a> of this website, so other students can use it too.</p>
 
                                 <h4>Features</h4>
                                 <ul>
-                                    <li>Wikipedia links to instructors.</li>
-                                    <li>A list of catalog recent updates.</li>
+                                    <li>Useful links on instructor pages (e.g. Wikipedia links).</li>
+                                    <li>A list of recent updates in the catalog of classes.</li>
                                     <li>An archive of Columbia University schedule for many years.</li>
                                     <li>
-                                        Another <a class="btn-link" href="http://culpa.info">CULPA</a> mirror for reading reviews
-                                        when original CULPA is down.
+                                        Yet another <a class="btn-link" href="http://culpa.info">CULPA</a> mirror for
+                                        reading reviews while original CULPA remains down.
                                     </li>
                                 </ul>
 
+                                <h4>Privacy</h4>
+                                <p>
+                                    We do not track our users, and we do not use HTTP cookies for tracking.
+                                    Some HTTP cookies are used for saving browser preferences –
+                                    for example, the default department in the search of classes is stored in
+                                    user's browser and not used for any data analysis.
+                                </p>
+
                                 <h4>Contact</h4>
                                 <p>
-                                    Github issues
+                                    Please use <a href="https://github.com/soid/peqod/issues">Github issues</a>
+                                    for asking questions and reporting bugs.
                                 </p>
 
-                                <p>
-                                    Peqod is misspelled Pequod. Just like Google is misspelled Googol.
-                                </p>
-
-                                <div align="center">
-                                    <img src="{% static 'peqod-big.png' %}" class="img-fluid" height="690"/>
+                                <div style="text-align:center;">
+                                    <img alt="Peqod logo" style="pointer-events: none;" src="{% static 'peqod-big.png' %}" class="img-fluid" height="690"/>
                                 </div>
-                                <div align="center">
-                                    <img src="{% static 'cu_logo.gif' %}" class="img-fluid" height="337"/>
+                                <div style="text-align:center;">
+                                    <img alt="Columbia University logo" style="pointer-events: none;" src="{% static 'cu_logo.gif' %}" class="img-fluid" height="337"/>
                                 </div>
                             </div>
                         </div>
