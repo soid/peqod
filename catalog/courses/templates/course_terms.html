@@ -15,9 +15,11 @@
                             {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                                 <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                             {% endif %}
+                            {% if course.course_descr %}
                             <p class="card-text">
                                 {{ course.course_descr | linebreaksbr }}
                             </p>
+                            {% endif %}
                         {% endwith %}
 
                         <table class="table">

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load cutags %}
+
+{% block title %}Instructors - Peqod{% endblock %}
+
+{% block content %}
+    <div class="py-1 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card shadow-sm" style="margin-bottom: 8px;">
+                        <div class="card-body">
+                            <div class="btn-toolbar" role="toolbar" aria-label="Search options">
+                                <form method="get">
+                                    <div class="input-group peqod-search-toolbar">
+                                        <div class="input-group-text" id="btnGroupAddon">Name:</div>
+                                        <input type="text" name="name" class="form-control" placeholder="Instructor Name" aria-label="Instructor Name" aria-describedby="btnGroupAddon" value="{% if q_name %}{{ q_name }}{% endif %}">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            {% if no_request %}
+                                Search instuctors by name.
+                            {% else %}
+                            {% if page_obj|length == 0 %}
+                                Nothing found.
+                            {% else %}
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Last Taught</th>
+                                    <th scope="col">Classes</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for instructor in page_obj %}
+                                    <tr>
+                                        <td>{% include "instructor_include.html" %}</td>
+                                        <td>{{ instructor.last_taught|semester_id2term }}</td>
+                                        <td>{{ instructor.count_classes }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if not no_request %}
+                <div class="row" style="margin-top: 8px;">
+                    <div class="col-md-2"></div>
+                    {% include "pager_include.html" %}
+                </div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8" style="text-align: center;">
+                    {% if page_obj|length == paginator.count %}
+                    {% else %}
+                        Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ paginator.count }} results.
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

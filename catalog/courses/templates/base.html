@@ -19,14 +19,15 @@
 <div class="container">
     <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-            <img src="{% static 'peqod-header.png' %}" height="64"/>
+            <img style="pointer-events: none;" alt="logo" src="{% static 'peqod-header.png' %}" height="64"/>
         </a>
 
         <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="/" class="nav-link px-2 link-secondary{% if menu == "classes" %} active{% endif %}">Classes</a></li>
-            <li><a href="/deps" class="nav-link px-2 link-dark{% if menu == "deps" %} active{% endif %}">Departments</a></li>
-            <li><a href="/updates" class="nav-link px-2 link-secondary{% if menu == "updates" %} active{% endif %}">Updates</a></li>
-            <li><a href="/about" class="nav-link px-2 link-dark{% if menu == "about" %} active{% endif %}">About</a></li>
+            <li><a href="{% url "search" %}" class="nav-link px-2 link-secondary{% if menu == "classes" %} active{% endif %}">Classes</a></li>
+            <li><a href="{% url "instructors" %}" class="nav-link px-2 link-dark{% if menu == "instructors" %} active{% endif %}">Instructors</a></li>
+            <li><a href="{% url "departments" %}" class="nav-link px-2 link-dark{% if menu == "deps" %} active{% endif %}">Departments</a></li>
+            <li><a href="{% url "updates" %}" class="nav-link px-2 link-secondary{% if menu == "updates" %} active{% endif %}">Updates</a></li>
+            <li><a href="{% url "about" %}" class="nav-link px-2 link-dark{% if menu == "about" %} active{% endif %}">About</a></li>
         </ul>
 
         <div class="col-md-3 text-end">

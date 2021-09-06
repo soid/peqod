@@ -1,8 +1,6 @@
 from functools import reduce
-from operator import __or__
+from operator import __or__, __and__
 from typing import List
-
-from urllib import parse
 
 from django.core.cache import cache
 from django.core.paginator import Paginator
@@ -105,21 +103,14 @@ def index(request):
     paginator = Paginator(course_list, 100)
     page_obj = paginator.get_page(page_number)
 
-    page_url = request.path
-    if request.META['QUERY_STRING']:
-        q = parse.parse_qs(request.META['QUERY_STRING'])
-        if 'p' in q.keys():
-            del q['p']
-        page_url = page_url + '?' + parse.urlencode(q, doseq=True)
-    else:
-        page_url = page_url + '?'
+    page_url = utils.get_page_url(request)
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
     departments = Course.objects.order_by("department").values('department').distinct()
 
     context = {
-        'menu': 'search',
+        'menu': 'classes',
         'page_url': page_url,
         # filters
         'q_year': q_year,
@@ -145,8 +136,7 @@ def index(request):
     return response
 
 
-@cache_page(60 * 60 * 24, key_prefix=
-CACHE_DEP_LIST_PAGE)
+@cache_page(60 * 60 * 24, key_prefix=CACHE_DEP_LIST_PAGE)
 def deps_list(request):
     deps = Course.objects.values("department")\
         .annotate(count_instructors=Count('instructor__id', distinct=True),
@@ -161,7 +151,7 @@ def deps_list(request):
     return render(request, 'departments.html', context)
 
 
-def department(request, department_name: str):
+def department_view(request, department_name: str):
     clss = Course.objects\
         .filter(department=unslash(department_name))\
         .values("course_code","course_title","course_subtitle")\
@@ -239,6 +229,43 @@ def instructor_view(request, instructor_name: str):
         'last_updated': _get_last_updated(),
     }
     return render(request, 'instructor.html', context)
+
+
+def instructors(request):
+    q_name = request.GET.get('name', '')
+
+    context = {
+        'menu': 'instructors',
+        'q_name': q_name,
+        'no_request': q_name == '',
+        'last_updated': _get_last_updated(),
+    }
+
+    if q_name and q_name != '':
+        q_name = q_name.strip()
+        qs = []
+        for part in q_name.split():
+            qs.append(Q(name__icontains=part))
+        qs = reduce(__and__, qs)
+        instructors = Instructor.objects.all()
+        instructors = instructors.filter(qs)
+
+        instructors = instructors\
+            .values("name", "culpa_link", "culpa_reviews_count", "wikipedia_link") \
+            .annotate(count_classes=Count('course__id'),
+                      last_taught=Max('course__semester_id')) \
+            .order_by('name')
+
+        # pagination
+        page_number = request.GET.get('p')
+        paginator = utils.FasterDjangoPaginator(instructors, 50)
+        page_obj = paginator.get_page(page_number)
+
+        context['page_obj'] = page_obj
+        context['paginator'] = paginator
+        context['page_url'] = utils.get_page_url(request)
+
+    return render(request, 'instructors.html', context)
 
 
 def updates(request):

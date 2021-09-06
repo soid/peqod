@@ -18,5 +18,7 @@ def unslash(value):
 
 @register.filter(name='semester_id2term')
 def semester_id2term(value):
+    if value is None:
+        return ""
     return Course.get_term_by_semester_id(value)
 

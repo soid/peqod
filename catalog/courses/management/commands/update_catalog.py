@@ -139,7 +139,7 @@ class Command(BaseCommand):
                                 val = None
                             # adjust CatalogUpdate
                             val_db = getattr(obj, key, None)
-                            if type(val) != type(val_db) and val_db is not None:
+                            if type(val) != type(val_db) and val_db is not None and val is not None:
                                 # cast to the same type as in db
                                 val = type(val_db)(val)
                             if val != val_db:

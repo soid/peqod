@@ -54,7 +54,7 @@
                             </div>
                         </div>
 
-                        <div class="btn-toolbar" role="toolbar" id="extra-search-options" {% if not q_extra_options %}hidden="true" {% endif %}aria-label="Extra search options">
+                        <div class="btn-toolbar" role="toolbar" id="extra-search-options" {% if not q_extra_options %}hidden {% endif %}aria-label="Extra search options">
                             <div class="btn-group me-2 peqod-search-toolbar" role="group" aria-label="First group">
                                 <div class="col-auto" style="margin-right: 6px;">
                                     <label for="level_select" class="col-form-label">Level:</label>
@@ -96,7 +96,7 @@
                         {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                             <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
                         {% endif %}
-                            <p class="card-text" id="card-details-{{ course.class_id }}" hidden="true">
+                            <p class="card-text" id="card-details-{{ course.class_id }}" hidden>
                                 {% if course.course_descr %}
                                 {{ course.course_descr | linebreaksbr }}
                                 {% endif %}
@@ -152,21 +152,7 @@
 
         {% if page_obj.has_next or page_obj.has_previous %}
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 12px; text-align: center;">
-                <div class="col">
-                    <nav class="blog-pagination" aria-label="Pagination">
-                        {% if page_obj.has_next %}
-                            <a class="btn btn-outline-secondary" href="{{ page_url }}&p={{ page_obj.next_page_number }}">Next</a>
-                        {% else %}
-                            <a class="btn btn-outline-secondary disabled" href="#" aria-disabled="true">Next</a>
-                        {% endif %}
-
-                        {% if page_obj.has_previous %}
-                            <a class="btn btn-outline-secondary" href="{{ page_url }}&p={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
-                        {% else %}
-                            <a class="btn btn-outline-secondary disabled" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                        {% endif %}
-                    </nav>
-                </div>
+                {% include "pager_include.html" %}
             </div>
         {% endif %}
 

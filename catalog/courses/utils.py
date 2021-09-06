@@ -1,6 +1,9 @@
 import datetime
+from urllib import parse
 
+from django.core.paginator import Paginator
 from django.db.models import Aggregate, CharField
+from django.utils.functional import cached_property
 
 DAYS = [
     ('m', 'Monday'),
@@ -12,6 +15,18 @@ DAYS = [
     ('u', 'Sunday')
 ]
 COOKIE_LAST_SEARCHED_DEPARTMENT = 'last_searched_dep'
+
+
+def get_page_url(request):
+    page_url = request.path
+    if request.META['QUERY_STRING']:
+        q = parse.parse_qs(request.META['QUERY_STRING'])
+        if 'p' in q.keys():
+            del q['p']
+        page_url = page_url + '?' + parse.urlencode(q, doseq=True)
+    else:
+        page_url = page_url + '?'
+    return page_url
 
 
 class Term:
@@ -84,3 +99,11 @@ class Concat(Aggregate):
             distinct='DISTINCT ' if distinct else '',
             output_field=CharField(),
             **extra)
+
+
+# taken from https://stackoverflow.com/questions/31740039/django-rest-framework-pagination-extremely-slow-count
+class FasterDjangoPaginator(Paginator):
+    @cached_property
+    def count(self):
+        # only select 'id' for counting, much cheaper
+        return self.object_list.values('id').count()

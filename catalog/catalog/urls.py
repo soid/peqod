@@ -24,13 +24,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='search'),
     path('deps', views.deps_list, name='departments'),
-    path('department/<str:department>', views.department, name='department'),
+    path('department/<str:department_name>', views.department_view, name='department'),
     path('about', views.about, name='about'),
     path('updates', views.updates, name='updates'),
     path('course/<str:course_code>/', RedirectView.as_view(pattern_name='course_terms')),
     path('course/<str:course_code>', views.course_list_terms, name='course_terms'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
     path('instr/<str:instructor_name>', views.instructor_view, name='instructor'),
+    path('instructors', views.instructors, name='instructors'),
+    path('instructors/', RedirectView.as_view(pattern_name='instructors')),
     # helpers
     path('__debug__/', include(debug_toolbar.urls)),
 ]
