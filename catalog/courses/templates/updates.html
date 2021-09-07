@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cutags %}
 
 {% block title %}Columbia Catalog{% endblock %}
 
@@ -20,7 +21,7 @@
                                 <p class="pb-3 mb-0 small lh-sm border-bottom">
                                     {% if update.related_class %}
                                     <strong class="d-block text-gray-dark" id="update{{ update.id }}">
-                                        <a href="{% url 'course' update.related_class.course_code update.related_class.get_term %}" role="button">
+                                        <a href="{% url 'course' update.related_class.course_code|course_code_urlize update.related_class.get_term %}" role="button">
                                         {{ update.related_class.course_code }}: {{ update.related_class.course_title }}
                                         </a>
                                         ({{ update.related_class.semester }} {{ update.related_class.year }})
@@ -101,6 +102,5 @@
 
             </div>
         </div>
-    </div>
 
 {% endblock %}

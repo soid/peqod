@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cutags %}
 
 {% block title %}Columbia Catalog{% endblock %}
 
@@ -33,7 +34,7 @@
                             <tbody>
                             {% for course in courses %}
                                 <tr>
-                                    <td><a href="{% url 'course' course.course_code course.get_term %}">{{ course.semester }} {{ course.year }}</a></td>
+                                    <td><a href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">{{ course.semester }} {{ course.year }}</a></td>
                                     <td>{% include "instructor_include.html" with instructor=course.instructor %}</td>
                                     <td>
                                         {% if course.scheduled_days %}

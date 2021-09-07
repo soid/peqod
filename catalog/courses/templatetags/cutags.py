@@ -22,3 +22,22 @@ def semester_id2term(value):
         return ""
     return Course.get_term_by_semester_id(value)
 
+
+# use nice urls e.g. _ in instructor names instead of %20
+
+@register.filter(name='prof_urlize')
+def prof_urlize(value):
+    return value.replace(' ', '_')
+
+
+def prof_unurlize(value):
+    return value.replace('_', ' ')
+
+
+@register.filter(name='course_code_urlize')
+def course_code_urlize(value):
+    return value.replace(' ', '-')
+
+
+def course_code_unurlize(value):
+    return value.replace('-', ' ')

@@ -1,3 +1,4 @@
+{% load cutags %}
 {% if instructor %}
 {{ instructor.name }}{% include "instructor_nugget_include.html" %}
 {% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
@@ -11,7 +12,7 @@
         Wikipedia
     </a>
 {% endif %}
-<a href="{% url 'instructor' instructor.name %}" class="btn btn-outline-info btn-sm" role="button">
+<a href="{% url 'instructor' instructor.name|prof_urlize %}" class="btn btn-outline-info btn-sm" role="button">
     Info
 </a>
 {% endif %}

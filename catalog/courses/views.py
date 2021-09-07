@@ -10,6 +10,7 @@ from django.views.decorators.cache import cache_page
 
 from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
+from courses.templatetags import cutags
 from courses.templatetags.cutags import unslash
 
 
@@ -184,6 +185,7 @@ def department_view(request, department_name: str):
 
 
 def course_list_terms(request, course_code: str):
+    course_code = cutags.course_code_unurlize(course_code)
     courses = get_list_or_404(Course.objects.prefetch_related('instructor').order_by('-semester_id'),
                               course_code=course_code)
     context = {
@@ -194,6 +196,7 @@ def course_list_terms(request, course_code: str):
 
 
 def course(request, course_code: str, term: str):
+    course_code = cutags.course_code_unurlize(course_code)
     year, semester = term.split('-', 1)
     year = int(year)
     courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
@@ -213,6 +216,7 @@ def course(request, course_code: str, term: str):
 
 
 def instructor_view(request, instructor_name: str):
+    instructor_name = cutags.prof_unurlize(instructor_name)
     instr = get_object_or_404(Instructor, name=instructor_name)
     courses = Course.objects \
         .all() \

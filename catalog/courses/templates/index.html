@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cutags %}
 
 {% block title %}Columbia Catalog{% endblock %}
 
@@ -125,7 +126,7 @@
                                             Wikipedia
                                         </a>
                                     {% endif %}
-                                    <a href="{% url 'instructor' course.instructor.name %}" class="btn btn-outline-info btn-sm" role="button">
+                                    <a href="{% url 'instructor' course.instructor.name|prof_urlize %}" class="btn btn-outline-info btn-sm" role="button">
                                         Info
                                     </a>
                                 </li>
@@ -137,7 +138,7 @@
                                     {% if course.course_descr %}
                                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showDetails('{{ course.class_id }}')">Show more</button>
                                     {% endif %}
-                                    <a href="{% url 'course' course.course_code course.get_term %}" class="btn btn-outline-secondary" role="button">
+                                    <a href="{% url 'course' course.course_code|course_code_urlize course.get_term %}" class="btn btn-outline-secondary" role="button">
                                         Details
                                     </a>
                                 </div>

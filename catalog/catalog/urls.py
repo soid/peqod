@@ -30,9 +30,9 @@ urlpatterns = [
     path('course/<str:course_code>/', RedirectView.as_view(pattern_name='course_terms')),
     path('course/<str:course_code>', views.course_list_terms, name='course_terms'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
-    path('instr/<str:instructor_name>', views.instructor_view, name='instructor'),
-    path('instructors', views.instructors, name='instructors'),
-    path('instructors/', RedirectView.as_view(pattern_name='instructors')),
+    path('prof/<str:instructor_name>', views.instructor_view, name='instructor'),
+    path('profs', views.instructors, name='instructors'),
+    path('profs/', RedirectView.as_view(pattern_name='instructors')),
     # helpers
     path('__debug__/', include(debug_toolbar.urls)),
 ]

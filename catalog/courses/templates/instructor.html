@@ -57,7 +57,7 @@
                                             {% endif %}
                                         </td>
                                         <td>{% if course.scheduled_days %}{{ course.scheduled_days }}{% endif %}</td>
-                                        <td><a class="btn btn-link" href="{% url 'course' course.course_code course.get_term %}">
+                                        <td><a class="btn btn-link" href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">
                                             {{ course.semester}} {{ course.year}}
                                         </a></td>
                                     </tr>
