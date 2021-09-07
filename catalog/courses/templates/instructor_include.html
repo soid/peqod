@@ -1,5 +1,5 @@
 {% if instructor %}
-{{ instructor.name }}
+{{ instructor.name }}{% include "instructor_nugget_include.html" %}
 {% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
 {% if instructor.culpa_link %}
     <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">

@@ -1,0 +1,6 @@
+{% load static %}
+{% if instructor.culpa_nugget == "g" %}
+    <img src="{% static 'gold_nugget.gif' %}" height="12" width="11" alt="Gold Nugget" title="Gold CULPA Nugget">
+{% elif instructor.culpa_nugget == "s" %}
+    <img src="{% static 'silver_nugget.gif' %}" height="12" width="11" alt="Silver Nugget" title="Silver CULPA Nugget">
+{% endif %}

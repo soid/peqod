@@ -113,7 +113,7 @@
                                 {% endif %}
                                 {% if course.instructor %}
                                 <li class="list-group-item">
-                                    Instructor: {{ course.instructor.name }}
+                                    Instructor: {{ course.instructor.name }}{% include "instructor_nugget_include.html" with instructor=course.instructor %}
                                     {% if course.instructor.culpa_link or course.instructor.wikipedia_link %}<br/>{% endif %}
                                     {% if course.instructor.culpa_link %}
                                     <a href="{{ course.instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">

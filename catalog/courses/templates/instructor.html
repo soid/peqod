@@ -11,7 +11,9 @@
                 <div class="col-md-8">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h4>{{ instructor.name }}</h4>
+                                <h4>
+                                    {{ instructor.name }}{% include "instructor_nugget_include.html" %}
+                                </h4>
                                 <p class="card-text">
                                     Department: {{ departments|join:", " }}
                                 </p>
