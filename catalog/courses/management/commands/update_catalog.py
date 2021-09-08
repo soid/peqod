@@ -92,6 +92,7 @@ class Command(BaseCommand):
                     update.added_date = update_date
                     update.year = year
                     update.semester = semester
+                    update.department = course['department']
                     update_diff = {}
                     if len(obj) > 0:
                         obj = obj[0]

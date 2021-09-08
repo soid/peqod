@@ -16,6 +16,7 @@ from courses.templatetags.cutags import unslash
 
 CACHE_GET_LAST_UPDATED = "_get_last_updated"
 CACHE_DEP_LIST_PAGE = "department_list_page"
+CACHE_DEPARTMENTS = "departments"
 
 
 def _get_last_updated():
@@ -23,6 +24,14 @@ def _get_last_updated():
     if not result:
         result = Course.objects.order_by('-added_date')[0].added_date
         cache.set(CACHE_GET_LAST_UPDATED, result, 60*60 * 24)  # 24 hours cache
+    return result
+
+
+def _get_departments():
+    result = cache.get(CACHE_DEPARTMENTS)
+    if not result:
+        result = Course.objects.order_by("department").values('department').distinct()
+        cache.set(CACHE_DEPARTMENTS, result, 60*60 * 24)  # 24 hours cache
     return result
 
 
@@ -108,7 +117,6 @@ def index(request):
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
-    departments = Course.objects.order_by("department").values('department').distinct()
 
     context = {
         'menu': 'classes',
@@ -126,7 +134,7 @@ def index(request):
         "course_list": course_list,
         'page_obj': page_obj,
         "semesters": semesters,
-        "departments": departments,
+        "departments": _get_departments(),
         "days": utils.DAYS,
         # last updated
         'last_updated': _get_last_updated(),
@@ -280,12 +288,23 @@ def updates(request):
         .order_by('-added_date') \
         .prefetch_related('related_class')
 
+    # filter departments if requested
+    deps_filter = request.GET.getlist('dep')
+    if len(deps_filter) > 0:
+        qs = []
+        for dep in deps_filter:
+            qs.append(Q(department=dep))
+        qs = reduce(__or__, qs)
+        updates = updates.filter(qs)
+
     paginator = Paginator(updates, 100)
     page_obj = paginator.get_page(page_number)
 
     context = {
         'menu': 'updates',
         'page_obj': page_obj,
+        "departments": _get_departments(),
+        'deps_filter': deps_filter,
         'last_updated': _get_last_updated(),
     }
     return render(request, 'updates.html', context)

@@ -132,6 +132,7 @@ class CatalogUpdate(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['added_date']),
+            models.Index(fields=['department']),
         ]
 
     def add_typ(self, typ_to_add: int):
