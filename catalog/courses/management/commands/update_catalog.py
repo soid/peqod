@@ -11,6 +11,7 @@ from django.db.utils import DataError, IntegrityError
 from django.db.utils import OperationalError
 from django.core.exceptions import ValidationError
 
+from catalog import settings
 from courses import utils, views
 from courses.models import Course, Instructor, CatalogUpdate, CatalogImports
 
@@ -19,7 +20,7 @@ class Command(BaseCommand):
     help = 'Updates provided semester classes'
 
     def __init__(self, *args, **kwargs):
-        self.data_files_location = "/columbia-catalog-data/classes/"
+        self.data_files_location = settings.CATALOG_LOCATION + '/classes/'
         self.setup_logger()
         super(Command, self).__init__(*args, **kwargs)
 

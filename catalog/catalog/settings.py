@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-#hb&!%0w!qj5u)2gqwpect2y=&m0fm#kuvk(e3wjx=484)c3v-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'peqod.com'
+]
 
 
 # Application definition
@@ -83,10 +85,10 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cu-graph-db',
-        'USER': 'root',
-        'PASSWORD': 'password2',
-        'HOST': 'db',
+        'NAME': os.getenv('PEQOD_MYSQL_NAME', 'cu-graph-db'),
+        'USER': os.getenv('PEQOD_MYSQL_USER', 'root'),
+        'PASSWORD': os.getenv('PEQOD_MYSQL_PW', 'password2'),
+        'HOST': os.getenv('PEQOD_MYSQL_HOST', 'db'),
         'PORT': 3306,
         "OPTIONS": {
             "init_command": "SET SESSION group_concat_max_len = 1000000;"
@@ -150,3 +152,4 @@ INTERNAL_IPS = [
     '172.22.0.1',
 ]
 
+CATALOG_LOCATION = os.getenv('PEQOD_CATALOG_LOCATION', "/columbia-catalog-data/classes/")

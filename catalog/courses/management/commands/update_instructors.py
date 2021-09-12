@@ -1,6 +1,7 @@
 import json
 from django.core.management.base import BaseCommand
 
+from catalog import settings
 from courses.models import Instructor
 
 
@@ -9,8 +10,12 @@ class Command(BaseCommand):
 
     instructor_fields = ['culpa_link', 'culpa_reviews_count', 'culpa_nugget', 'wikipedia_link']
 
+    def __init__(self, *args, **kwargs):
+        self.data_files_location = settings.CATALOG_LOCATION
+        super(Command, self).__init__(*args, **kwargs)
+
     def handle(self, *args, **options):
-        import_filename = "/columbia-catalog-data/instructors/instructors.json"
+        import_filename = self.data_files_location + "/instructors/instructors.json"
         num_lines = sum(1 for _ in open(import_filename))
         with open(import_filename) as fclasses:
             num = 1
