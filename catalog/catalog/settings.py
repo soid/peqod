@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-#hb&!%0w!qj5u)2gqwpect2y=&m0fm#kuvk(e3wjx=484)c3v-
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'peqod.com'
+    'peqod.com',
+    '127.0.0.1',
+    'localhost',
 ]
 
 
@@ -99,7 +101,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'cache:11211'
+        'LOCATION': os.getenv('PEQOD_MEMCACHE_LOCATION', 'cache:11211'),
     }
 }
 
