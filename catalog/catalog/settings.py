@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('PEQOD_SECRET_KEY', 'django-insecure-#hb&!%0w!qj5u)2gqwpect2y=&m0fm#kuvk(e3wjx=484)c3v-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('PEQOD_DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
     'peqod.com',

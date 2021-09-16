@@ -24,6 +24,8 @@ services:
   web:
     build: .
     command: python catalog/manage.py runserver --insecure 0.0.0.0:8002
+    environment:
+      - PEQOD_DEBUG=True
     volumes:
       - .:/CUGraphWeb
       - /Users/soid/Dropbox/Code/2020/columbia-catalog-data:/columbia-catalog-data
