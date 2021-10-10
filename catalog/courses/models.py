@@ -84,6 +84,17 @@ class Course(models.Model):
 
         super(Course, self).save(*args, **kwargs)
 
+    def get_canvas_id(self):
+        section_key = self.section_key
+        yr = section_key[0:4]
+        c = section_key[4]
+        dep = section_key[5:9]
+        cls_num = section_key[9:13]
+        cls_c = section_key[13]
+        sec = section_key[14:]
+        code = dep + cls_c + cls_num + "_" + sec + "_" + yr + "_" + c
+        return code
+
 
 class Instructor(models.Model):
     name = models.CharField(max_length=128)
