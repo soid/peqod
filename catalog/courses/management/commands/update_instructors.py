@@ -15,6 +15,7 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
     def handle(self, *args, **options):
+        self.logger.info("Starting update_instructors.py")
         import_filename = self.data_files_location + "/instructors/instructors.json"
         num_lines = sum(1 for _ in open(import_filename))
         with open(import_filename) as fclasses:
@@ -47,6 +48,7 @@ class Command(BaseCommand):
                 if num % 250 == 0:
                     print("Processed:", num, "/", num_lines)
                 num += 1
+        self.logger.info("Done update_instructors.py")
 
     @staticmethod
     def convert_nugget(nugget_json):
