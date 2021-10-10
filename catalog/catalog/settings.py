@@ -154,7 +154,7 @@ INTERNAL_IPS = [
     '172.22.0.1',
 ]
 
-CATALOG_LOCATION = os.getenv('PEQOD_CATALOG_LOCATION', "/columbia-catalog-data/classes/")
+CATALOG_LOCATION = os.getenv('PEQOD_CATALOG_LOCATION', "/columbia-catalog-data")
 
 tmp = os.getenv('PEQOD_STATIC_ROOT', None)
 if tmp:

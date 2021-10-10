@@ -15,7 +15,7 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
     def handle(self, *args, **options):
-        import_filename = self.data_files_location + "/../instructors/instructors.json"
+        import_filename = self.data_files_location + "/instructors/instructors.json"
         num_lines = sum(1 for _ in open(import_filename))
         with open(import_filename) as fclasses:
             num = 1
