@@ -87,11 +87,19 @@ class Course(models.Model):
 
 class Instructor(models.Model):
     name = models.CharField(max_length=128)
+
     culpa_link = models.URLField(null=True)
     culpa_reviews_count = models.PositiveSmallIntegerField(null=True)
     culpa_nugget = models.CharField(max_length=1, null=True)
     culpa_reviews = models.JSONField(null=True)
+
     wikipedia_link = models.URLField(null=True)
+    great_teacher_award = models.PositiveSmallIntegerField(null=False, default=False)  # if not null - year awarded
+
+    gscholar_id = models.CharField(max_length=16, null=True)
+    gscholar_hindex = models.PositiveSmallIntegerField(null=True)
+    gscholar_hindex5y = models.PositiveSmallIntegerField(null=True)
+    gscholar_json = models.JSONField(null=True)
 
     class Meta:
         indexes = [

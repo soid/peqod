@@ -12,7 +12,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h4>
-                                    {{ instructor.name }}{% include "instructor_nugget_include.html" %}
+                                    {{ instructor.name }}
                                 </h4>
                                 <p class="card-text">
                                     Department: {{ departments|join:", " }}
@@ -20,7 +20,7 @@
                                 <p>
                                 {% if instructor.culpa_link %}
                                     <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
-                                        CULPA: {{ instructor.culpa_reviews_count }}
+                                        CULPA: {{ instructor.culpa_reviews_count }} {% include "instructor_nugget_include.html" %}
                                     </a>
                                 {% else %}
                                     <a class="btn btn-outline-secondary btn-sm disabled">No CULPA reviews</a>
@@ -31,6 +31,13 @@
                                     </a>
                                 {% else %}
                                     <a class="btn btn-outline-secondary btn-sm disabled">No Wikipedia Page</a>
+                                {% endif %}
+                                {% if instructor.gscholar_hindex %}
+                                    <a href="https://scholar.google.com/citations?user={{ instructor.gscholar_id }}" class="btn btn-outline-info btn-sm" role="button">
+                                        h-index: {{ instructor.gscholar_hindex }}
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-outline-secondary btn-sm disabled">No Google Scholar</a>
                                 {% endif %}
                                 </p>
                             </div>

@@ -126,6 +126,11 @@
                                             Wikipedia
                                         </a>
                                     {% endif %}
+                                    {% if course.instructor.gscholar_id %}
+                                        <a href="https://scholar.google.com/citations?user={{ course.instructor.gscholar_id }}" class="btn btn-outline-info btn-sm" role="button">
+                                            h-index: {{ course.instructor.gscholar_hindex }}
+                                        </a>
+                                    {% endif %}
                                     <a href="{% url 'instructor' course.instructor.name|prof_urlize %}" class="btn btn-outline-info btn-sm" role="button">
                                         Info
                                     </a>

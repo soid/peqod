@@ -1,15 +1,20 @@
 {% load cutags %}
 {% if instructor %}
-{{ instructor.name }}{% include "instructor_nugget_include.html" %}
+{{ instructor.name }}
 {% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
 {% if instructor.culpa_link %}
     <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
-        CULPA: {{ instructor.culpa_reviews_count }}
+        CULPA: {{ instructor.culpa_reviews_count }} {% include "instructor_nugget_include.html" %}
     </a>
 {% endif %}
 {% if instructor.wikipedia_link %}
     <a href="{{ instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
         Wikipedia
+    </a>
+{% endif %}
+{% if instructor.gscholar_id %}
+    <a href="https://scholar.google.com/citations?user={{ instructor.gscholar_id }}" class="btn btn-outline-info btn-sm" role="button">
+        h-index: {{ instructor.gscholar_hindex }}
     </a>
 {% endif %}
 <a href="{% url 'instructor' instructor.name|prof_urlize %}" class="btn btn-outline-info btn-sm" role="button">

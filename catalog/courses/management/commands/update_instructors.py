@@ -15,7 +15,7 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
     def handle(self, *args, **options):
-        import_filename = self.data_files_location + "/instructors/instructors.json"
+        import_filename = self.data_files_location + "/../instructors/instructors.json"
         num_lines = sum(1 for _ in open(import_filename))
         with open(import_filename) as fclasses:
             num = 1
@@ -34,6 +34,14 @@ class Command(BaseCommand):
 
                 if 'culpa_reviews' in instructor_json.keys():
                     obj.culpa_reviews = instructor_json['culpa_reviews']
+
+                if 'gscholar' in instructor_json.keys() and instructor_json['gscholar']:
+                    gscholar = instructor_json['gscholar']
+                    obj.gscholar_json = json.dumps(gscholar)
+                    obj.gscholar_hindex = gscholar['hindex']
+                    obj.gscholar_hindex5y = gscholar['hindex5y']
+                    obj.gscholar_id = gscholar['scholar_id']
+
                 obj.save()
 
                 if num % 250 == 0:
