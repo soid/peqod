@@ -59,6 +59,8 @@
                                     {% endif %}
                                     {% if update.is_T_NEW_CLASS %}
                                         <span class="badge rounded-pill bg-primary">New class</span><br/>
+                                        Call number: {{ update.related_class.call_number }}
+                                        <br/>
                                     {% endif %}
                                     {% if update.is_T_NEW_INSTRUCTOR %}
                                         New instructor
