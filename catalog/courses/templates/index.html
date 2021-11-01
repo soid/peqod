@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load cutags %}
 
 {% block title %}Peqod :: Classes{% endblock %}
@@ -115,6 +116,11 @@
                                 {% if course.instructor %}
                                 <li class="list-group-item">
                                     Instructor: {{ course.instructor.name }}
+                                    {% if course.instructor.great_teacher_award %}
+                                        <img src="{% static 'gta-mini.png' %}" height="22" width="26"
+                                             alt="Great Teacher Award {{ course.instructor.great_teacher_award }}"
+                                             title="Great Teacher Award {{ course.instructor.great_teacher_award }}" />
+                                    {% endif %}
                                     {% if course.instructor.culpa_link or course.instructor.wikipedia_link %}<br/>{% endif %}
                                     {% if course.instructor.culpa_link %}
                                     <a href="{{ course.instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">

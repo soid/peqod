@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load cutags %}
 
 {% block title %}Peqod :: {{ instructor.name }}{% endblock %}
@@ -11,6 +12,13 @@
                 <div class="col-md-8">
                         <div class="card shadow-sm">
                             <div class="card-body">
+                                {% if instructor.great_teacher_award %}
+                                    <a href="https://www.socgtoday.com/masterrecipientlist" style="text-decoration: none; display: block; text-align: center; float: right; ">
+                                        <img src="{% static 'gta.png' %}" height="135" width="52" alt="Great Teacher Award {{ instructor.great_teacher_award }}" title="Great Teacher Award {{ instructor.great_teacher_award }}" />
+                                        <br/>
+                                        Great Teacher<br/>Award {{ instructor.great_teacher_award }}
+                                    </a>
+                                {% endif %}
                                 <h4>
                                     {{ instructor.name }}
                                 </h4>

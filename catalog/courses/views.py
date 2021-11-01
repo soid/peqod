@@ -171,7 +171,7 @@ def department_view(request, department_name: str):
     instructors = Instructor.objects\
         .filter(course__department=unslash(department_name))\
         .values("name", "wikipedia_link", "culpa_link", "culpa_nugget", "culpa_reviews_count",
-                "gscholar_id", "gscholar_hindex") \
+                "gscholar_id", "gscholar_hindex", "great_teacher_award") \
         .annotate(count_classes=Count('course__id', distinct=True),
                   last_taught=Max('course__semester_id')) \
         .order_by("name")
@@ -265,7 +265,7 @@ def instructors(request):
 
         instructors = instructors\
             .values("name", "culpa_link", "culpa_reviews_count", "culpa_nugget", "wikipedia_link",
-                    "gscholar_id", "gscholar_hindex") \
+                    "gscholar_id", "gscholar_hindex", "great_teacher_award") \
             .annotate(count_classes=Count('course__id'),
                       last_taught=Max('course__semester_id')) \
             .order_by('name')

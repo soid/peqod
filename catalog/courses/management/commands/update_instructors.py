@@ -1,4 +1,7 @@
 import json
+import logging
+from os.path import dirname, abspath
+
 from django.core.management.base import BaseCommand
 
 from catalog import settings
@@ -12,7 +15,21 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         self.data_files_location = settings.CATALOG_LOCATION
+        self.setup_logger()
         super(Command, self).__init__(*args, **kwargs)
+
+    def setup_logger(self):
+        log_filename = "management.log"
+
+        self.logger = logging.getLogger(__name__)
+        log_format = '[%(threadName)s] %(levelname)s %(asctime)s - %(message)s'
+        logging.basicConfig(level=logging.ERROR,
+                            format=log_format)
+        this_dir = dirname(abspath(__file__))
+        log_file_handler = logging.FileHandler(this_dir + '/' + log_filename)
+        log_file_handler.setFormatter(logging.Formatter(log_format))
+        self.logger.addHandler(log_file_handler)
+        self.logger.setLevel(logging.DEBUG)
 
     def handle(self, *args, **options):
         self.logger.info("Starting update_instructors.py")
@@ -42,6 +59,9 @@ class Command(BaseCommand):
                     obj.gscholar_hindex = gscholar['hindex']
                     obj.gscholar_hindex5y = gscholar['hindex5y']
                     obj.gscholar_id = gscholar['scholar_id']
+
+                if 'gta' in instructor_json.keys() and instructor_json['gta']:
+                    obj.great_teacher_award = int(instructor_json['gta'])
 
                 obj.save()
 
