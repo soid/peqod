@@ -51,11 +51,11 @@ class Term:
         """
         today = datetime.date.today()
         td = (today.month, today.day)
-        if td <= (4, 1):
+        if td <= (3, 20):
             semester = 'Spring'
         elif td <= (6, 20):
             semester = 'Summer'
-        elif td <= (11, 1):
+        elif td <= (10, 20):
             semester = 'Fall'
         else:
             semester = 'Spring'
@@ -77,6 +77,23 @@ class Term:
 
     def get_term_key(self):
         return str(self.year) + '=' + self.semester.capitalize()
+
+    def get_term_start_date(self):
+        known_terms = {
+            (2021, 'summer'): datetime.date(2021, 6, 2),
+            (2021, 'fall'): datetime.date(2021, 9, 9),
+        }
+        term_t = self.year, self.semester
+        if term_t in known_terms:
+            return known_terms[term_t]
+
+        # rough estimate of when semester starts
+        if self.semester == 'fall':
+            return datetime.date(self.year, 9, 5)
+        if self.semester == 'spring':
+            return datetime.date(self.year, 1, 18)
+        if self.semester == 'summer':
+            return datetime.date(self.year, 6, 1)
 
     def get_previous_term(self):
         year = self.year

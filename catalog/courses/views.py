@@ -12,7 +12,7 @@ from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 from courses.templatetags import cutags
 from courses.templatetags.cutags import unslash
-
+from courses.utils import Term
 
 CACHE_GET_LAST_UPDATED = "_get_last_updated"
 CACHE_DEP_LIST_PAGE = "department_list_page"
@@ -50,6 +50,46 @@ def _get_levels(q_level: List[str]) -> List[int]:
         else:
             result.append(normz_lvl(lvl))
     return result
+
+
+def _get_courses_enrollment_js(courses):
+    result = []
+    term = None
+    term_start = ''
+    dates = set()
+    max_value = 5
+    for c in courses:
+        if term is None:
+            term = Term(c.year, c.semester)
+            term_start = term.get_term_start_date().isoformat()
+        if c.enrollment:
+            dates.update(c.enrollment.keys())
+    if len(dates) <= 3:
+        return ''  # don't display the graph when too little data is available
+    dates = sorted(list(dates))
+    for dt in dates:
+        year, month, day = dt.split('-', 2)
+        # js Date receives index of month
+        enr_all = [str(c.enrollment[dt]['cur']) if dt in c.enrollment else 'null' for c in courses]
+        max_value = max([max_value] +
+                        [c.enrollment[dt]['cur'] for c in courses if dt in c.enrollment])
+        annotation = "null"
+        if term_start == dt:
+            annotation = '"Semester starts"'
+        result.append("[new Date(%s, %s, %s), %s, %s],"
+                      % (year, int(month)-1, day, annotation, ",".join(enr_all)))
+
+    result_str = ""
+    for c in courses:
+        instr_str = str(c.call_number)
+        if c.instructor:
+            instr_str = c.instructor.name + " / " + instr_str
+        result_str += "data.addColumn('number', '%s');\n" % instr_str
+    result_str += "data.addRows([\n" + "\n".join(result) + "]);\n"
+    result_str += "enableChart = true;\n"
+    result_str += "chatMaxValue = %s;\n" % int(max_value * 1.05)  # upper bound of the graph
+
+    return result_str
 
 
 def index(request):
@@ -217,6 +257,7 @@ def course(request, course_code: str, term: str):
 
     context = {
         'courses': courses,
+        'enrollment_js': _get_courses_enrollment_js(courses),
         'course_code': course_code,
         'is_latest_term': is_latest_term,
         'last_updated': _get_last_updated(),

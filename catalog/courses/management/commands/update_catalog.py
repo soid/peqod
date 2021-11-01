@@ -4,6 +4,7 @@ import json
 from os import listdir
 from os.path import getmtime, dirname, abspath
 from typing import Dict, List
+import pandas as pd
 
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
@@ -21,6 +22,7 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         self.data_files_location = settings.CATALOG_LOCATION + '/classes/'
+        self.data_enrollment_files_location = settings.CATALOG_LOCATION + '/classes-enrollment/'
         self.setup_logger()
         super(Command, self).__init__(*args, **kwargs)
 
@@ -73,6 +75,13 @@ class Command(BaseCommand):
                 for item in cur_call_numbers
             }
 
+            # read enrollment file
+            enrollment_fn = self.data_enrollment_files_location \
+                            + str(year) + "-" + semester.capitalize() + ".json"
+            enrollment_df = pd.read_json(enrollment_fn, lines=True, dtype=object)
+            enrollment_df.set_index('call_number', inplace=True)
+
+            # read classes file
             import_filename = self.data_files_location \
                               + str(year) + "-" + semester.capitalize() + ".json"
             num_lines = sum(1 for _ in open(import_filename))
@@ -82,7 +91,7 @@ class Command(BaseCommand):
                 for line in fclasses:
                     course = json.loads(line)
                     # skip bad data
-                    if not course['course_title']:
+                    if 'course_title' not in course or not course['course_title']:
                         self.logger.info("WARNING: No course_title, skipping: %s", course)
                         continue
                     # find existing one
@@ -163,11 +172,23 @@ class Command(BaseCommand):
 
                     update.diff = json.dumps(update_diff)
 
+                    # update enrollment
+                    if course['call_number'] in enrollment_df.index:
+                        course_enr_row = enrollment_df.loc[course['call_number']]
+                        course_enr = course_enr_row['enrollment']
+                        obj.enrollment = course_enr
+
+                        last_dt = max(course_enr.keys())
+                        # print("course_enr[last_dt]", course_enr[last_dt], last_dt)
+                        obj.enrollment_cur = course_enr[last_dt]['cur']
+                        obj.enrollment_max = course_enr[last_dt]['max']
+
                     # remove from list of call numbers in current db
                     if course['department'] in cur_call_numbers.keys():
                         if int(course['call_number']) in cur_call_numbers[course['department']]:
                             cur_call_numbers[course['department']].remove(int(course['call_number']))
 
+                    # save updated course
                     if options['dry_run']:
                         if update.typ:
                             self.logger.info("%s %s", update, update.diff)

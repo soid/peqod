@@ -39,6 +39,10 @@ class Course(models.Model):
     # prerequisites
     # type
 
+    enrollment = models.JSONField(null=True)
+    enrollment_cur = models.PositiveSmallIntegerField(null=True)
+    enrollment_max = models.PositiveSmallIntegerField(null=True)
+
     added_date = models.DateTimeField('date added', auto_now_add=True)
     edited_date = models.DateTimeField('date edited', auto_now=True)
 
