@@ -81,6 +81,7 @@ class Command(BaseCommand):
                 enrollment_df = pd.read_json(enrollment_fn, lines=True, dtype=object)
                 enrollment_df.set_index('call_number', inplace=True)
             else:
+                self.logger.info("Not found enrollment data for semester: %s" % term)
                 enrollment_df = pd.DataFrame()
 
             # read classes file
