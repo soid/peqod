@@ -53,6 +53,7 @@ class Term:
         """
         today = datetime.date.today()
         td = (today.month, today.day)
+        year = today.year
         if td <= (3, 20):
             semester = 'Spring'
         elif td <= (6, 20):
@@ -61,7 +62,8 @@ class Term:
             semester = 'Fall'
         else:
             semester = 'Spring'
-        return Term(today.year, semester)
+            year += 1
+        return Term(year, semester)
 
     @staticmethod
     def get_last_four_terms():
