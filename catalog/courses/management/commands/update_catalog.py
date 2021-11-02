@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from catalog import settings
 from courses import utils, views
 from courses.models import Course, Instructor, CatalogUpdate, CatalogImports
+from courses.utils import IndexedJsonFile
 
 
 class Command(BaseCommand):
@@ -78,11 +79,10 @@ class Command(BaseCommand):
             enrollment_fn = self.data_enrollment_files_location \
                             + str(year) + "-" + semester.capitalize() + ".json"
             if exists(enrollment_fn):
-                enrollment_df = pd.read_json(enrollment_fn, lines=True, dtype=object)
-                enrollment_df.set_index('call_number', inplace=True)
+                enrollment_data = IndexedJsonFile(enrollment_fn, 'call_number')
             else:
                 self.logger.info("Not found enrollment data for semester: %s" % term)
-                enrollment_df = pd.DataFrame()
+                enrollment_data = IndexedJsonFile(None, 'call_number')
 
             # read classes file
             import_filename = self.data_files_location \
@@ -176,13 +176,13 @@ class Command(BaseCommand):
                     update.diff = json.dumps(update_diff)
 
                     # update enrollment
-                    if course['call_number'] in enrollment_df.index:
-                        course_enr_row = enrollment_df.loc[course['call_number']]
-                        course_enr = course_enr_row['enrollment']
+                    course_enr_row = enrollment_data.get_list(course['call_number'])
+                    if course_enr_row:
+                        course_enr = course_enr_row[0]
+                        course_enr = course_enr['enrollment']
                         obj.enrollment = course_enr
 
                         last_dt = max(course_enr.keys())
-                        # print("course_enr[last_dt]", course_enr[last_dt], last_dt)
                         obj.enrollment_cur = course_enr[last_dt]['cur']
                         obj.enrollment_max = course_enr[last_dt]['max']
 

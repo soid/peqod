@@ -1,4 +1,6 @@
 import datetime
+import json
+from collections import defaultdict
 from urllib import parse
 
 from django.core.paginator import Paginator
@@ -124,3 +126,63 @@ class FasterDjangoPaginator(Paginator):
     def count(self):
         # only select 'id' for counting, much cheaper
         return self.object_list.values('id').count()
+
+
+def _create_file(filename, lines):
+    # cause doctest can't input new line characters :(
+    f = open(filename, "w")
+    for line in lines:
+        f.write(line)
+        f.write("\n")
+    f.close()
+
+
+class IndexedJsonFile:
+    """Loads a json file (json per line), keeps in memory only the index.
+    Loads rows when requested. Saves memory
+
+    >>> _create_file("/tmp/test.json", ['{"a": 1, "b": "axcc"}', \
+         '{"a": 123, "b": "axdasdc"}','{"a": 23, "b": "aa3332c"}','{"a": 3, "b": "ac1111"}'])
+    >>> obj = IndexedJsonFile("/tmp/test.json", "a")
+    >>> obj.get_list(123)
+    [{'a': 123, 'b': 'axdasdc'}]
+    >>> obj.get_list(1)
+    [{'a': 1, 'b': 'axcc'}]
+    >>> obj.get_list(23)
+    [{'a': 23, 'b': 'aa3332c'}]
+    >>> obj.get_list(10000000)
+    []
+    >>> obj.get_list(3)
+    [{'a': 3, 'b': 'ac1111'}]
+    >>> obj = IndexedJsonFile(None, "a")
+    >>> obj.get_list(1)
+    []
+    """
+
+    def __init__(self, filename: str, index_column: str):
+        self.filename = filename
+        self.index_column = index_column
+
+        # index
+        self.index = defaultdict(lambda: [])  # index_value -> [file locations]
+        if filename:
+            self.fh = open(self.filename, 'r')
+            pos = 0
+            line = self.fh.readline()
+            while line:
+                obj = json.loads(line)
+                index_value = obj[self.index_column]
+                self.index[index_value].append(pos)
+                pos = self.fh.tell()
+                line = self.fh.readline()
+
+    def get_list(self, key):
+        result = []
+        for pos in self.index[key]:
+            self.fh.seek(pos)
+            line = self.fh.readline()
+            obj = json.loads(line)
+            result.append(obj)
+        return result
+
+
