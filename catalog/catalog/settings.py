@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+from os.path import dirname, abspath
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -155,6 +156,9 @@ INTERNAL_IPS = [
 ]
 
 CATALOG_LOCATION = os.getenv('PEQOD_CATALOG_LOCATION', "/columbia-catalog-data")
+
+root_dir = dirname(dirname(dirname(abspath(__file__))))
+CATALOG_LOGS_DIR = os.getenv('PEQOD_CATALOG_LOGS_DIR', root_dir)
 
 tmp = os.getenv('PEQOD_STATIC_ROOT', None)
 if tmp:

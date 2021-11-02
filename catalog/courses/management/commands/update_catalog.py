@@ -41,8 +41,7 @@ class Command(BaseCommand):
         log_format = '[%(threadName)s] %(levelname)s %(asctime)s - %(message)s'
         logging.basicConfig(level=logging.ERROR,
                             format=log_format)
-        this_dir = dirname(abspath(__file__))
-        log_file_handler = logging.FileHandler(this_dir + '/' + log_filename)
+        log_file_handler = logging.FileHandler(settings.CATALOG_LOGS_DIR + '/' + log_filename)
         log_file_handler.setFormatter(logging.Formatter(log_format))
         self.logger.addHandler(log_file_handler)
         self.logger.setLevel(logging.DEBUG)
