@@ -2,7 +2,7 @@ import logging
 from datetime import datetime, date, timezone
 import json
 from os import listdir
-from os.path import getmtime, dirname, abspath
+from os.path import getmtime, dirname, abspath, exists
 from typing import Dict, List
 import pandas as pd
 
@@ -78,8 +78,11 @@ class Command(BaseCommand):
             # read enrollment file
             enrollment_fn = self.data_enrollment_files_location \
                             + str(year) + "-" + semester.capitalize() + ".json"
-            enrollment_df = pd.read_json(enrollment_fn, lines=True, dtype=object)
-            enrollment_df.set_index('call_number', inplace=True)
+            if exists(enrollment_fn):
+                enrollment_df = pd.read_json(enrollment_fn, lines=True, dtype=object)
+                enrollment_df.set_index('call_number', inplace=True)
+            else:
+                enrollment_df = pd.DataFrame()
 
             # read classes file
             import_filename = self.data_files_location \
