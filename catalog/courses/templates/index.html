@@ -93,7 +93,9 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
-                                {{ course.course_title }}
+                                <a class="card-title link-unstyled" href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">
+                                    {{ course.course_title }}
+                                </a>
                             </h5>
                         {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                             <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
