@@ -92,7 +92,7 @@ def _get_courses_enrollment_js(courses):
     return result_str
 
 
-def index(request):
+def classes(request):
     q_term = request.GET.get('term', '').strip()
     if q_term:
         if q_term != "ALL":

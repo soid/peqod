@@ -22,7 +22,8 @@ from courses import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='search'),
+    path('', RedirectView.as_view(pattern_name='search')),
+    path('classes/', views.classes, name='search'),
     path('deps', views.deps_list, name='departments'),
     path('department/<str:department_name>', views.department_view, name='department'),
     path('about', views.about, name='about'),
