@@ -17,6 +17,7 @@ DAYS = [
     ('u', 'Sunday')
 ]
 COOKIE_LAST_SEARCHED_DEPARTMENT = 'last_searched_dep'
+COOKIE_LAST_USED_TERM = 'last_used_term'
 
 
 def get_page_url(request):

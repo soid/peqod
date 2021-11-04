@@ -94,6 +94,9 @@ def _get_courses_enrollment_js(courses):
 
 def classes(request):
     q_term = request.GET.get('term', '').strip()
+    save_term = True
+    if not q_term and request.COOKIES.get(utils.COOKIE_LAST_USED_TERM):
+        q_term = request.COOKIES.get(utils.COOKIE_LAST_USED_TERM)
     if q_term:
         if q_term != "ALL":
             q_semester, q_year = q_term.rsplit(" ", 1)
@@ -101,6 +104,8 @@ def classes(request):
         else:
             q_year = q_semester = None
     else:
+        # use default
+        save_term = False  # don't save default option
         interested_term = utils.Term.get_interested_term()
         q_semester, q_year = interested_term.semester.capitalize(), interested_term.year
         q_term = interested_term.get_term_descr()
@@ -182,6 +187,8 @@ def classes(request):
 
     response = render(request, 'index.html', context)
     response.set_cookie(utils.COOKIE_LAST_SEARCHED_DEPARTMENT, q_department)
+    if save_term:
+        response.set_cookie(utils.COOKIE_LAST_USED_TERM, q_term, max_age=60*60 * 48)
     return response
 
 
