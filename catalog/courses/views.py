@@ -340,6 +340,8 @@ def updates(request):
 
     # filter departments if requested
     deps_filter = request.GET.getlist('dep')
+    if not deps_filter and request.COOKIES.get(utils.COOKIE_LAST_DEPARTMENTS):
+        deps_filter = request.COOKIES.get(utils.COOKIE_LAST_DEPARTMENTS).split("|")
     if len(deps_filter) > 0:
         qs = []
         for dep in deps_filter:
@@ -357,7 +359,12 @@ def updates(request):
         'deps_filter': deps_filter,
         'last_updated': _get_last_updated(),
     }
-    return render(request, 'updates.html', context)
+    response = render(request, 'updates.html', context)
+    if deps_filter:
+        ck = "|".join(deps_filter)
+        if len(ck) < 4096:
+            response.set_cookie(utils.COOKIE_LAST_DEPARTMENTS, ck)
+    return response
 
 
 def about(request):
