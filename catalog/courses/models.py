@@ -36,6 +36,8 @@ class Course(models.Model):
     # method_of_instruction
     # open_to
     points = models.CharField(max_length=7)
+    points_min = models.DecimalField(max_digits=3, decimal_places=1, null=True)
+    points_max = models.DecimalField(max_digits=3, decimal_places=1, null=True)
     # prerequisites
     # type
 
@@ -98,6 +100,17 @@ class Course(models.Model):
         sec = section_key[14:]
         code = dep + cls_c + cls_num + "_" + sec + "_" + yr + "_" + c
         return code
+
+    def get_points_min_max(self) -> (float, float):
+        p_min, p_max = None, None
+        if self.points:
+            if '-' in self.points:
+                lf, rt = self.points.split('-', 1)
+                p_min, p_max = float(lf), float(rt)
+            else:
+                p_min = float(self.points)
+                p_max = p_min
+        return p_min, p_max
 
 
 class Instructor(models.Model):
