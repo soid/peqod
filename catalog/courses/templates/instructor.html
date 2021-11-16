@@ -84,7 +84,7 @@
 
 {#                          CULPA Reviews #}
                     {% if instructor.culpa_reviews %}
-                        <div class="card shadow-sm" style="margin-top: 20px; padding-left: 20px; padding-right: 20px;">
+                        <div id="culpareviews" class="card shadow-sm" style="margin-top: 20px; padding-left: 20px; padding-right: 20px;">
                             <div class="card-body">
                                 <h4>CULPA Reviews</h4>
                                 (Copy from <a href="{{ instructor.culpa_link }}">CULPA.info</a>)
@@ -104,6 +104,9 @@
                                         {{ review.publish_date | to_date | date:"Y" }}
                                     </td>
                                     <td>
+                                        {% for course in review.course_codes %}
+                                            <small class="text-muted">{{ course.c }}</small> <b>{{ course.t }}</b><br/>
+                                        {% endfor %}
                                         {{ review.text | linebreaks }}
                                         <strong>Workload</strong>:
                                         {{ review.workload | linebreaks }}

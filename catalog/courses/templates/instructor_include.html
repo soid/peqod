@@ -9,7 +9,8 @@
 {% endif %}
 {% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
 {% if instructor.culpa_link %}
-    <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button">
+{#   <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button"> #}
+    <a href="{% url 'instructor' instructor.name|prof_urlize %}#culpareviews" class="btn btn-outline-info btn-sm" role="button">
         CULPA: {{ instructor.culpa_reviews_count }} {% include "instructor_nugget_include.html" %}
     </a>
 {% endif %}
