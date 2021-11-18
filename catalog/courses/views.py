@@ -5,7 +5,7 @@ from typing import List
 
 from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, Max
+from django.db.models import Q, Count, Max, F
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.decorators.cache import cache_page
 
@@ -122,6 +122,8 @@ def classes(request):
     q_day = request.GET.getlist('d', [])
     q_time_start = request.GET.get('st', '00:00')
     q_time_end = request.GET.get('et', '23:00')
+    q_max_enrollment = request.GET.get('enr_max', None)
+    q_free_space = request.GET.get('fs', '') == 'on'
 
     course_list = Course.objects
 
@@ -146,6 +148,11 @@ def classes(request):
         course_list = course_list.filter(scheduled_time_start__gte=datetime.time.fromisoformat(q_time_start))
     if q_time_end:
         course_list = course_list.filter(scheduled_time_end__lte=datetime.time.fromisoformat(q_time_end))
+    if q_max_enrollment:
+        num = int(q_max_enrollment)
+        course_list = course_list.filter(enrollment_max__lte=num)
+    if q_free_space:
+        course_list = course_list.filter(enrollment_cur__lt=F("enrollment_max"))
     if q_query:
         course_list = course_list.filter(
             Q(course_descr__icontains=q_query)
@@ -155,7 +162,9 @@ def classes(request):
             | Q(course_subtitle__icontains=q_query))
     q_extra_options = q_level or q_day \
         or (q_time_start != '06:00' and q_time_start != '00:00') \
-        or (q_time_end != '23:00')
+        or (q_time_end != '23:00') \
+        or q_max_enrollment \
+        or q_free_space
 
     # order
     course_list = course_list \
@@ -185,6 +194,8 @@ def classes(request):
         'q_time_start': q_time_start,
         'q_time_end': q_time_end,
         'q_level': q_level,
+        'q_max_enrollment': q_max_enrollment,
+        'q_free_space': q_free_space,
         'q_extra_options': q_extra_options,
         # content
         "course_list": course_list,
