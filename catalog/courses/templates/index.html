@@ -102,7 +102,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a class="card-title link-unstyled" href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">
+                                <a class="card-title remove-underline" href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">
                                     {{ course.course_title }}
                                 </a>
                             </h5>
@@ -126,7 +126,7 @@
                                 {% endif %}
                                 {% if course.instructor %}
                                 <li class="list-group-item">
-                                    Instructor: {{ course.instructor.name }}
+                                    Instructor: <a class="remove-underline" href="{% url 'instructor' course.instructor.name|prof_urlize %}">{{ course.instructor.name }}</a>
                                     {% if course.instructor.great_teacher_award %}
                                         <img src="{% static 'gta-mini.png' %}" height="22" width="26"
                                              alt="Great Teacher Award {{ course.instructor.great_teacher_award }}"
