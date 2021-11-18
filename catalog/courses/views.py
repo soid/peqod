@@ -1,3 +1,4 @@
+import datetime
 from functools import reduce
 from operator import __or__, __and__
 from typing import List
@@ -119,6 +120,8 @@ def classes(request):
             q_department = 'Computer Science'
     q_level = request.GET.getlist('lvl', [])
     q_day = request.GET.getlist('d', [])
+    q_time_start = request.GET.get('st', '00:00')
+    q_time_end = request.GET.get('et', '23:00')
 
     course_list = Course.objects
 
@@ -139,6 +142,10 @@ def classes(request):
         qs = [Q(scheduled_days__contains=day.upper()) for day in q_day]
         qs = reduce(__or__, qs)
         course_list = course_list.filter(qs)
+    if q_time_start:
+        course_list = course_list.filter(scheduled_time_start__gte=datetime.time.fromisoformat(q_time_start))
+    if q_time_end:
+        course_list = course_list.filter(scheduled_time_end__lte=datetime.time.fromisoformat(q_time_end))
     if q_query:
         course_list = course_list.filter(
             Q(course_descr__icontains=q_query)
@@ -146,7 +153,9 @@ def classes(request):
             | Q(course_code__icontains=q_query)
             | Q(course_title__icontains=q_query)
             | Q(course_subtitle__icontains=q_query))
-    q_extra_options = q_level or q_day
+    q_extra_options = q_level or q_day \
+        or (q_time_start != '06:00' and q_time_start != '00:00') \
+        or (q_time_end != '23:00')
 
     # order
     course_list = course_list \
@@ -173,6 +182,8 @@ def classes(request):
         'q_department': q_department,
         'q_query': q_query,
         'q_day': q_day,
+        'q_time_start': q_time_start,
+        'q_time_end': q_time_end,
         'q_level': q_level,
         'q_extra_options': q_extra_options,
         # content

@@ -81,6 +81,15 @@
                                     {% endfor %}
                                 </select>
                             </div>
+{#                          Time Filter#}
+                            <div class="btn-group me-2 peqod-search-toolbar" role="group" aria-label="First group">
+                                <div class="col-auto" style="margin-right: 6px;">
+                                    <label for="days_select" class="col-form-label">Time:</label>
+                                    <input type="time" step="any" id="EndTime" name="st" value="{{ q_time_start }}" min="6:00" max="23:00" />
+                                    -
+                                    <input type="time" step="any" id="StartTime" name="et" value="{{ q_time_end }}" min="6:00" max="23:00" />
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

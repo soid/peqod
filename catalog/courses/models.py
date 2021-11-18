@@ -57,7 +57,13 @@ class Course(models.Model):
             models.Index(fields=['department', 'year', 'semester']),
             models.Index(fields=['course_code', 'year', 'semester']),
             models.Index(fields=['call_number', 'year', 'semester']),
-            models.Index(fields=['instructor']),
+            models.Index(fields=['scheduled_time_start']),
+            models.Index(fields=['scheduled_time_end']),
+            models.Index(fields=['scheduled_days']),
+            models.Index(fields=['points_min']),
+            models.Index(fields=['points_max']),
+            models.Index(fields=['enrollment_cur']),
+            models.Index(fields=['enrollment_max']),
             models.Index(fields=['added_date']),
         ]
 
