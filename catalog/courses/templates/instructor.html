@@ -61,6 +61,7 @@
                                 </thead>
                                 <tbody>
                                 {% for course in courses %}
+                                    {% ifchanged course.course_code course.course_title course.course_subtitle course.scheduled_days course.semester course.year %}
                                     <tr id="{{ course.id }}">
                                         <th scope="row">
                                             {{ course.course_code }}
@@ -76,6 +77,7 @@
                                             {{ course.semester}} {{ course.year}}
                                         </a></td>
                                     </tr>
+                                    {% endifchanged %}
                                 {% endfor %}
                                 </tbody>
                             </table>

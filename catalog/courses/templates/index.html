@@ -117,11 +117,15 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" style="margin-top: 2px;">
 {# List courses #}
                 {% for course in page_obj %}
+                {% if not course.view_skip %}
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
                                 <a class="card-title remove-underline" href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">
+                                    {{ course.temp_thing }}
+                                    {{ course.view_skip }}
+
                                     {{ course.course_title }}
                                 </a>
                             </h5>
@@ -143,39 +147,29 @@
                                         Department: {{ course.department }}
                                     </li>
                                 {% endif %}
-                                {% if course.scheduled_time_start and "points" in display_fields %}
+                                {% if course.scheduled_time_start and "scheduled_time" in display_fields %}
                                 <li class="list-group-item">
                                     {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
                                 </li>
                                 {% endif %}
-                                {% if course.instructor and "points" in display_fields %}
+                                {% if course.view_scheduled_days and "scheduled_time" in display_fields %}
+                                    {% for xxx in course.view_scheduled_days %}
+                                    <li class="list-group-item">
+                                        {{ xxx.0 }} {{ xxx.1 }}-{{ xxx.2 }}
+                                    </li>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if course.instructor and "instructor" in display_fields %}
                                 <li class="list-group-item">
-                                    Instructor: <a class="remove-underline" href="{% url 'instructor' course.instructor.name|prof_urlize %}">{{ course.instructor.name }}</a>
-                                    {% if course.instructor.great_teacher_award %}
-                                        <img src="{% static 'gta-mini.png' %}" height="22" width="26"
-                                             alt="Great Teacher Award {{ course.instructor.great_teacher_award }}"
-                                             title="Great Teacher Award {{ course.instructor.great_teacher_award }}" />
-                                    {% endif %}
-                                    {% if course.instructor.culpa_link or course.instructor.wikipedia_link %}<br/>{% endif %}
-                                    {% if course.instructor.culpa_link %}
-                                    <a href="{% url 'instructor' course.instructor.name|prof_urlize %}#culpareviews" class="btn btn-outline-info btn-sm" role="button">
-                                        CULPA: {{ course.instructor.culpa_reviews_count }} {% include "instructor_nugget_include.html" with instructor=course.instructor %}
-                                    </a>
-                                    {% endif %}
-                                    {% if course.instructor.wikipedia_link %}
-                                        <a href="{{ course.instructor.wikipedia_link }}" class="btn btn-outline-info btn-sm" role="button">
-                                            Wikipedia
-                                        </a>
-                                    {% endif %}
-                                    {% if course.instructor.gscholar_id %}
-                                        <a href="https://scholar.google.com/citations?user={{ course.instructor.gscholar_id }}" class="btn btn-outline-info btn-sm" role="button">
-                                            h-index: {{ course.instructor.gscholar_hindex }}
-                                        </a>
-                                    {% endif %}
-                                    <a href="{% url 'instructor' course.instructor.name|prof_urlize %}" class="btn btn-outline-info btn-sm" role="button">
-                                        Info
-                                    </a>
+                                    Instructor: {% include "instructor_include.html" with instructor=course.instructor page_break=True %}
                                 </li>
+                                {% endif %}
+                                {% if course.view_instructors and "instructor" in display_fields %}
+                                    {% for xxx in course.view_instructors %}
+                                    <li class="list-group-item">
+                                        Instructor: {% include "instructor_include.html" with instructor=xxx page_break=True %}
+                                    </li>
+                                    {% endfor %}
                                 {% endif %}
                                 {% if "enrollment" in display_fields and course.enrollment_cur is not None %}
                                     <li class="list-group-item">
@@ -200,6 +194,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
 
             </div>

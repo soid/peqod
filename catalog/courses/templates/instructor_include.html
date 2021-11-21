@@ -1,15 +1,17 @@
 {% load cutags %}
 {% load static %}
 {% if instructor %}
-{{ instructor.name }}
+<a class="remove-underline" href="{% url 'instructor' instructor.name|prof_urlize %}">
+    {{ instructor.name }}
+</a>
 {% if instructor.great_teacher_award %}
     <img src="{% static 'gta-mini.png' %}" height="22" width="26"
          alt="Great Teacher Award {{ instructor.great_teacher_award }}"
          title="Great Teacher Award {{ instructor.great_teacher_award }}" />
 {% endif %}
+{% if page_break %}<br/>{% endif %}
 {% if instructor.culpa_link or instructor.wikipedia_link %}{% endif %}
 {% if instructor.culpa_link %}
-{#   <a href="{{ instructor.culpa_link }}" class="btn btn-outline-info btn-sm" role="button"> #}
     <a href="{% url 'instructor' instructor.name|prof_urlize %}#culpareviews" class="btn btn-outline-info btn-sm" role="button">
         CULPA: {{ instructor.culpa_reviews_count }} {% include "instructor_nugget_include.html" %}
     </a>

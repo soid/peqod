@@ -191,9 +191,34 @@ def classes(request):
         .prefetch_related('instructor') \
         .order_by('semester_id', 'level', 'section_key')
 
+    # precompute very similar classes (have only different schedule or instructor), so we display them as a single card
+    i = 0
+    results_per_page = 100
+    prev_c = None
+    for c in course_list:
+        c.view_instructors = []
+        c.view_scheduled_days = []
+        if prev_c is not None \
+                and prev_c.course_code == c.course_code \
+                and prev_c.course_title == c.course_title \
+                and prev_c.course_subtitle == c.course_subtitle:
+            if prev_c.instructor.name != c.instructor.name:
+                prev_c.view_instructors.append(c.instructor)
+                c.view_instructors = prev_c.view_instructors  # next refer to the previous which is the first
+                c.view_skip = True
+            if prev_c.scheduled_days != c.scheduled_days or prev_c.scheduled_time_start != c.scheduled_time_start:
+                prev_c.view_scheduled_days.append((c.scheduled_days, c.scheduled_time_start, c.scheduled_time_end))
+                c.view_scheduled_days = prev_c.view_scheduled_days  # next refer to the previous which is the first
+                c.view_skip = True
+
+        prev_c = c
+        i += 1
+        if i >= results_per_page:
+            break
+
     # pagination
     page_number = request.GET.get('p')
-    paginator = Paginator(course_list, 100)
+    paginator = Paginator(course_list, results_per_page)
     page_obj = paginator.get_page(page_number)
 
     page_url = utils.get_page_url(request)
