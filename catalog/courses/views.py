@@ -93,6 +93,10 @@ def _get_courses_enrollment_js(courses):
     return result_str
 
 
+QUERY_POINTS_MIN = 0
+QUERY_POINTS_MAX = 25
+
+
 def classes(request):
     q_term = request.GET.get('term', '').strip()
     save_term = True
@@ -124,6 +128,9 @@ def classes(request):
     q_time_end = request.GET.get('et', '23:00')
     q_max_enrollment = request.GET.get('enr_max', None)
     q_free_space = request.GET.get('fs', '') == 'on'
+    q_points_min = request.GET.get('pts', QUERY_POINTS_MIN)
+    q_points_max = request.GET.get('pts_max', QUERY_POINTS_MAX)
+    q_points_min, q_points_max = int(q_points_min), int(q_points_max)
 
     course_list = Course.objects
 
@@ -153,6 +160,10 @@ def classes(request):
         course_list = course_list.filter(enrollment_max__lte=num)
     if q_free_space:
         course_list = course_list.filter(enrollment_cur__lt=F("enrollment_max"))
+    if q_points_min > 0:
+        course_list = course_list.filter(points_min__gte=q_points_min)
+    if q_points_max < 25:
+        course_list = course_list.filter(points_max__lte=q_points_max)
     if q_query:
         course_list = course_list.filter(
             Q(course_descr__icontains=q_query)
@@ -164,7 +175,8 @@ def classes(request):
         or (q_time_start != '06:00' and q_time_start != '00:00') \
         or (q_time_end != '23:00') \
         or q_max_enrollment \
-        or q_free_space
+        or q_free_space \
+        or (q_points_min != QUERY_POINTS_MIN or q_points_max != QUERY_POINTS_MAX)
 
     # order
     course_list = course_list \
@@ -197,6 +209,8 @@ def classes(request):
         'q_max_enrollment': q_max_enrollment,
         'q_free_space': q_free_space,
         'q_extra_options': q_extra_options,
+        'q_points_min': q_points_min,
+        'q_points_max': q_points_max,
         # content
         "course_list": course_list,
         'page_obj': page_obj,

@@ -87,7 +87,7 @@
                                     <label for="start_time" class="col-form-label">Time:</label>
                                     <input type="time" step="any" id="start_time" name="st" value="{{ q_time_start }}" min="6:00" max="23:00" />
                                     -
-                                    <input type="time" step="any" id="end_time" name="et" value="{{ q_time_end }}" min="6:00" max="23:00" />
+                                    <input type="time" step="any" id="end_time" name="et" value="{{ q_time_end }}" min="6:00" max="23:59" />
                                 </div>
                             </div>
 {#                          Enrollment Filter#}
@@ -98,6 +98,15 @@
 
                                     <input type="checkbox" id="free_space_only" name="fs" {% if q_free_space %}checked{% endif %} />
                                     <label for="free_space_only">Has free space</label>
+                                </div>
+                            </div>
+{#                          Points filter#}
+                            <div class="btn-group me-2 peqod-search-toolbar" role="group" aria-label="First group">
+                                <div class="col-auto" style="margin-right: 6px;">
+                                    <label for="pts" class="col-form-label">Points:</label>
+                                    <input type="number" id="pts" name="pts" min="0" max="25" style="width: 45px;" value="{{ q_points_min }}" />
+                                    -
+                                    <input type="number" id="pts" name="pts_max" min="0" max="25" style="width: 45px;" value="{{ q_points_max }}" />
                                 </div>
                             </div>
                         </div>
