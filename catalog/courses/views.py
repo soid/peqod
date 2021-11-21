@@ -132,14 +132,20 @@ def classes(request):
     q_points_max = request.GET.get('pts_max', QUERY_POINTS_MAX)
     q_points_min, q_points_max = int(q_points_min), int(q_points_max)
 
+    display_fields = set(['scheduled_time', 'instructor', 'points'])
+
     course_list = Course.objects
 
     # filter
     if q_term and q_term != "ALL":
         course_list = course_list.filter(year=q_year).filter(semester=q_semester)
+    if q_term == "ALL":
+        display_fields.add("term")
     if q_department:
         if q_department != "ALL":
             course_list = course_list.filter(department=q_department)
+        else:
+            display_fields.add("department")
     if q_level:
         # create db filter
         qs = []
@@ -158,8 +164,10 @@ def classes(request):
     if q_max_enrollment:
         num = int(q_max_enrollment)
         course_list = course_list.filter(enrollment_max__lte=num)
+        display_fields.add("enrollment")
     if q_free_space:
         course_list = course_list.filter(enrollment_cur__lt=F("enrollment_max"))
+        display_fields.add("enrollment")
     if q_points_min > 0:
         course_list = course_list.filter(points_min__gte=q_points_min)
     if q_points_max < 25:
@@ -211,6 +219,7 @@ def classes(request):
         'q_extra_options': q_extra_options,
         'q_points_min': q_points_min,
         'q_points_max': q_points_max,
+        'display_fields': display_fields,
         # content
         "course_list": course_list,
         'page_obj': page_obj,

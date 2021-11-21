@@ -94,7 +94,7 @@
                             <div class="btn-group me-2 peqod-search-toolbar" role="group" aria-label="First group">
                                 <div class="col-auto" style="margin-right: 6px;">
                                     <label for="enr_max" class="col-form-label">Max enrollment:</label>
-                                    <input type="number" id="enr_max" name="enr_max" min="1" max="100" style="width: 60px;" value="{{ q_max_enrollment }}" />
+                                    <input type="number" id="enr_max" name="enr_max" min="1" max="900" style="width: 60px;" value="{{ q_max_enrollment }}" />
 
                                     <input type="checkbox" id="free_space_only" name="fs" {% if q_free_space %}checked{% endif %} />
                                     <label for="free_space_only">Has free space</label>
@@ -133,17 +133,22 @@
                                 {{ course.course_descr | linebreaksbr }}
                                 {% endif %}
                             <ul class="list-group list-group-flush">
-                                {% if q_term == "ALL" %}
+                                {% if "term" in display_fields %}
                                 <li class="list-group-item">
                                     {{ course.semester }} {{ course.year }}
                                 </li>
                                 {% endif %}
-                                {% if course.scheduled_time_start %}
+                                {% if "department" in display_fields %}
+                                    <li class="list-group-item">
+                                        Department: {{ course.department }}
+                                    </li>
+                                {% endif %}
+                                {% if course.scheduled_time_start and "points" in display_fields %}
                                 <li class="list-group-item">
                                     {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
                                 </li>
                                 {% endif %}
-                                {% if course.instructor %}
+                                {% if course.instructor and "points" in display_fields %}
                                 <li class="list-group-item">
                                     Instructor: <a class="remove-underline" href="{% url 'instructor' course.instructor.name|prof_urlize %}">{{ course.instructor.name }}</a>
                                     {% if course.instructor.great_teacher_award %}
@@ -172,7 +177,14 @@
                                     </a>
                                 </li>
                                 {% endif %}
-                                <li class="list-group-item">{{ course.points }} points</li>
+                                {% if "enrollment" in display_fields and course.enrollment_cur is not None %}
+                                    <li class="list-group-item">
+                                        Enrollment: {{ course.enrollment_cur }}{% if course.enrollment_max %} / {{ course.enrollment_max }}{% endif %}
+                                    </li>
+                                {% endif %}
+                                {% if "points" in display_fields %}
+                                    <li class="list-group-item">{{ course.points }} points</li>
+                                {% endif %}
                             </ul>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
