@@ -202,7 +202,8 @@ def classes(request):
                 and prev_c.course_code == c.course_code \
                 and prev_c.course_title == c.course_title \
                 and prev_c.course_subtitle == c.course_subtitle:
-            if prev_c.instructor.name != c.instructor.name:
+            if prev_c.instructor and c.instructor \
+                    and prev_c.instructor.name != c.instructor.name:
                 prev_c.view_instructors.append(c.instructor)
                 c.view_instructors = prev_c.view_instructors  # next refer to the previous which is the first
                 c.view_skip = True

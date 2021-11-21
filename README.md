@@ -26,6 +26,10 @@ Squash migrations:
 
     python catalog/manage.py squashmigrations courses 0005 0011
 
+Reverse migration:
+
+    python catalog/manage.py migrate courses 0012
+
 # Logo Author
 
 [Shutterstock](https://www.shutterstock.com/image-illustration/ink-black-white-illustration-old-ship-755181730)
