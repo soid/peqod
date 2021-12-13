@@ -3,6 +3,6 @@
 
 User-agent: *
 Disallow: /course/
-Disallow: /instr/
+Disallow: /prof/
 Disallow: /updates
 Allow: /about
