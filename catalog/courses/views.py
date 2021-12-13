@@ -434,7 +434,7 @@ def updates(request):
     if deps_filter:
         ck = "|".join(deps_filter)
         if len(ck) < 4096:
-            response.set_cookie(utils.COOKIE_LAST_DEPARTMENTS, ck)
+            response.set_cookie(utils.COOKIE_LAST_DEPARTMENTS, ck, 60*60 * 24 * 90)
     return response
 
 
