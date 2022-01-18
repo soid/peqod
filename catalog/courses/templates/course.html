@@ -63,7 +63,9 @@
                             <ul class="list-group list-group-flush">
                                 {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
                                 <li class="list-group-item">
-                                    <div class="fw-bold">{{ course.course_subtitle }}</div>
+                                    <div class="fw-bold">
+                                        <a class="remove-underline" href="{% url 'course_section' course.get_term course.call_number %}">{{ course.course_subtitle }}</a>
+                                    </div>
                                 </li>
                                 {% endif %}
                                 <li class="list-group-item">
@@ -109,6 +111,11 @@
             <div class="row">
                 <div class="col-2"></div>
                 <div class="col-8" style="text-align: center; margin-top: 20px;">
+                    {% if show_sections_link %}
+                    <a href="{% url 'course' course_code|course_code_urlize course_term.get_term_key %}" class="btn btn-outline-primary btn-sm" role="button">
+                        Show Other Sections
+                    </a>
+                    {% endif %}
                     <a href="{% url 'course_terms' course_code|course_code_urlize %}" class="btn btn-outline-primary btn-sm" role="button">
                         View Other Semesters
                     </a>

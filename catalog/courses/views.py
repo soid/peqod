@@ -343,6 +343,29 @@ def course(request, course_code: str, term: str):
     return render(request, 'course.html', context)
 
 
+def course_section(request, term: str, call_number: str):
+    year, semester = term.split('-', 1)
+    year = int(year)
+    courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
+                              call_number=call_number, year=year, semester=semester)
+    last_terms = utils.Term.get_last_four_terms()
+    course_term = utils.Term(year, semester)
+    course_code = courses[0].course_code
+
+    is_latest_term = course_term in last_terms
+
+    context = {
+        'courses': courses,
+        'show_sections_link': True,
+        'course_term': course_term,
+        'enrollment_js': _get_courses_enrollment_js(courses),
+        'course_code': course_code,
+        'is_latest_term': is_latest_term,
+        'last_updated': _get_last_updated(),
+    }
+    return render(request, 'course.html', context)
+
+
 def instructor_view(request, instructor_name: str):
     instructor_name = cutags.prof_unurlize(instructor_name)
     instr = get_object_or_404(Instructor, name=instructor_name)

@@ -82,7 +82,7 @@ class Term:
         return self.semester.capitalize() + ' ' + str(self.year)
 
     def get_term_key(self):
-        return str(self.year) + '=' + self.semester.capitalize()
+        return str(self.year) + '-' + self.semester.capitalize()
 
     def get_term_start_date(self):
         known_terms = {

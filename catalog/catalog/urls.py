@@ -28,6 +28,7 @@ urlpatterns = [
     path('department/<str:department_name>', views.department_view, name='department'),
     path('about', views.about, name='about'),
     path('updates', views.updates, name='updates'),
+    path('course/<str:term>/<int:call_number>', views.course_section, name='course_section'),
     path('course/<str:course_code>/', RedirectView.as_view(pattern_name='course_terms')),
     path('course/<str:course_code>', views.course_list_terms, name='course_terms'),
     path('course/<str:course_code>/<str:term>', views.course, name='course'),
