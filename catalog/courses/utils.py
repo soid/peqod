@@ -58,7 +58,7 @@ class Term:
         year = today.year
         if td <= (3, 20):
             semester = 'Spring'
-        elif td <= (6, 20):
+        elif td <= (4, 1):
             semester = 'Summer'
         elif td <= (10, 20):
             semester = 'Fall'

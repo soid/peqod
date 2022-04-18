@@ -23,7 +23,11 @@ CACHE_DEPARTMENTS = "departments"
 def _get_last_updated():
     result = cache.get(CACHE_GET_LAST_UPDATED)
     if not result:
-        result = Course.objects.order_by('-added_date')[0].added_date
+        tmp = Course.objects.order_by('-added_date')
+        if len(tmp) > 0:
+            result = tmp[0].added_date
+        else:
+            result = datetime.date(1970, 1, 1)  # no data found
         cache.set(CACHE_GET_LAST_UPDATED, result, 60*60 * 24)  # 24 hours cache
     return result
 

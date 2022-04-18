@@ -10,6 +10,10 @@
     python catalog/manage.py update_instructors
     python catalog/manage.py update_catalog 2021-Summer
 
+Or import all semester files:
+
+    python catalog/manage.py update_catalog ALL
+
 In Docker contrainer you need to mount first catalog to
 `/columbia-catalog-data`
 
