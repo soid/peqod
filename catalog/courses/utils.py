@@ -141,12 +141,74 @@ def _create_file(filename, lines):
     f.close()
 
 
+def lazy_read_json(filename: str):
+    """
+    :return generator returning (json_obj, pos, lenth)
+
+    >>> test_objs = [{'a': 11, 'b': 22, 'c': {'abc': 'z', 'zzz': {}}}, \
+                {'a': 31, 'b': 42, 'c': [{'abc': 'z', 'zzz': {}}]}, \
+                {'a': 55, 'b': 66, 'c': [{'abc': 'z'}, {'z': 3}, {'y': 3}]}, \
+                {'a': 71, 'b': 62, 'c': 63}]
+    >>> json_str = json.dumps(test_objs, indent=4, sort_keys=True)
+    >>> _create_file("/tmp/test.json", [json_str])
+    >>> g = lazy_read_json("/tmp/test.json")
+    >>> next(g)
+    ({'a': 11, 'b': 22, 'c': {'abc': 'z', 'zzz': {}}}, 120, 116)
+    >>> next(g)
+    ({'a': 31, 'b': 42, 'c': [{'abc': 'z', 'zzz': {}}]}, 274, 152)
+    >>> next(g)
+    ({'a': 55, 'b': 66, 'c': [{'abc': 'z'}, {'z': 3}, {'y': 3}]}, 505, 229)
+    >>> next(g)
+    ({'a': 71, 'b': 62, 'c': 63}, 567, 62)
+    >>> next(g)
+    Traceback (most recent call last):
+      ...
+    StopIteration
+    """
+    with open(filename) as fh:
+        state = 0
+        json_str = ''
+        cb_depth = 0  # curly brace depth
+        line = fh.readline()
+        while line:
+            if line[-1] == "\n":
+                line = line[:-1]
+            line_strip = line.strip()
+            if state == 0 and line == '[':
+                state = 1
+                pos = fh.tell()
+            elif state == 1 and line_strip == '{':
+                state = 2
+                json_str += line + "\n"
+            elif state == 2:
+                if len(line_strip) > 0 and line_strip[-1] == '{':  # count nested objects
+                    cb_depth += 1
+
+                json_str += line + "\n"
+                if cb_depth == 0 and (line_strip == '},' or line_strip == '}'):
+                    # end of parsing an object
+                    if json_str[-2:] == ",\n":
+                        json_str = json_str[:-2]  # remove trailing comma
+                    state = 1
+                    obj = json.loads(json_str)
+                    yield obj, pos, len(json_str)
+                    pos = fh.tell()
+                    json_str = ""
+                elif line_strip == '}' or line_strip == '},':
+                    cb_depth -= 1
+
+            line = fh.readline()
+
+
 class IndexedJsonFile:
     """Loads a json file (json per line), keeps in memory only the index.
     Loads rows when requested. Saves memory
 
-    >>> _create_file("/tmp/test.json", ['{"a": 1, "b": "axcc"}', \
-         '{"a": 123, "b": "axdasdc"}','{"a": 23, "b": "aa3332c"}','{"a": 3, "b": "ac1111"}'])
+    >>> test_objs = [{"a": 1, "b": "axcc"}, \
+                     {"a": 123, "b": "axdasdc"}, \
+                     {"a": 23, "b": "aa3332c"}, \
+                     {"a": 3, "b": "ac1111"}]
+    >>> _create_file("/tmp/test.json", [json.dumps(test_objs, indent=4, sort_keys=True)])
     >>> obj = IndexedJsonFile("/tmp/test.json", "a")
     >>> obj.get_list(123)
     [{'a': 123, 'b': 'axdasdc'}]
@@ -171,20 +233,15 @@ class IndexedJsonFile:
         self.index = defaultdict(lambda: [])  # index_value -> [file locations]
         if filename:
             self.fh = open(self.filename, 'r')
-            pos = 0
-            line = self.fh.readline()
-            while line:
-                obj = json.loads(line)
+            for obj, pos, length in lazy_read_json(self.filename):
                 index_value = obj[self.index_column]
-                self.index[index_value].append(pos)
-                pos = self.fh.tell()
-                line = self.fh.readline()
+                self.index[index_value].append((pos, length))
 
     def get_list(self, key):
         result = []
-        for pos in self.index[key]:
+        for pos, length in self.index[key]:
             self.fh.seek(pos)
-            line = self.fh.readline()
+            line = self.fh.read(length)
             obj = json.loads(line)
             result.append(obj)
         return result

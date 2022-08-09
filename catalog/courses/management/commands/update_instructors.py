@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 
 from catalog import settings
 from courses.models import Instructor
+from courses import utils
 
 
 class Command(BaseCommand):
@@ -33,40 +34,37 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.logger.info("Starting update_instructors.py")
         import_filename = self.data_files_location + "/instructors/instructors.json"
-        num_lines = sum(1 for _ in open(import_filename))
-        with open(import_filename) as fclasses:
-            num = 1
-            for line in fclasses:
-                instructor_json = json.loads(line)
 
-                # add instructor
-                obj, _ = Instructor.get_by_name(instructor_json['name'])
-                # update fields
-                for field_name in Command.instructor_fields:
-                    if instructor_json[field_name]:
-                        val = instructor_json[field_name]
-                        if 'culpa_nugget' == field_name:
-                            val = Command.convert_nugget(val)
-                        setattr(obj, field_name, val)
+        num = 0
+        for instructor_json, _, _ in utils.lazy_read_json(import_filename):
+            # add instructor
+            obj, _ = Instructor.get_by_name(instructor_json['name'])
+            # update fields
+            for field_name in Command.instructor_fields:
+                if instructor_json[field_name]:
+                    val = instructor_json[field_name]
+                    if 'culpa_nugget' == field_name:
+                        val = Command.convert_nugget(val)
+                    setattr(obj, field_name, val)
 
-                if 'culpa_reviews' in instructor_json.keys():
-                    obj.culpa_reviews = instructor_json['culpa_reviews']
+            if 'culpa_reviews' in instructor_json.keys():
+                obj.culpa_reviews = instructor_json['culpa_reviews']
 
-                if 'gscholar' in instructor_json.keys() and instructor_json['gscholar']:
-                    gscholar = instructor_json['gscholar']
-                    obj.gscholar_json = json.dumps(gscholar)
-                    obj.gscholar_hindex = gscholar['hindex']
-                    obj.gscholar_hindex5y = gscholar['hindex5y']
-                    obj.gscholar_id = gscholar['scholar_id']
+            if 'gscholar' in instructor_json.keys() and instructor_json['gscholar']:
+                gscholar = instructor_json['gscholar']
+                obj.gscholar_json = json.dumps(gscholar)
+                obj.gscholar_hindex = gscholar['hindex']
+                obj.gscholar_hindex5y = gscholar['hindex5y']
+                obj.gscholar_id = gscholar['scholar_id']
 
-                if 'gta' in instructor_json.keys() and instructor_json['gta']:
-                    obj.great_teacher_award = int(instructor_json['gta'])
+            if 'gta' in instructor_json.keys() and instructor_json['gta']:
+                obj.great_teacher_award = int(instructor_json['gta'])
 
-                obj.save()
+            obj.save()
 
-                if num % 250 == 0:
-                    print("Processed:", num, "/", num_lines)
-                num += 1
+            if num % 250 == 0:
+                print("Processed:", num)
+            num += 1
         self.logger.info("Done update_instructors.py")
 
     @staticmethod
