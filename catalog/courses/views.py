@@ -475,17 +475,6 @@ num2dayname = {1: "Monday", 2: "Tuesday", 3: "Wednesday",
 def day2num(days):
     return [days2num[x] for x in days]
 
-def schedule_comparator(item1, item2):
-    a, b = item1, item2
-
-    an = [days2num[x] for x in a.scheduled_days]
-    bn = [days2num[x] for x in b.scheduled_days]
-    if an == bn:
-        # compare by time
-        return 1 if a.scheduled_time_start < b.scheduled_time_start else -1
-    else:
-        return 1 if an < bn else -1
-
 
 def location_details(request, location: str, term: str):
     results_limit = 100
