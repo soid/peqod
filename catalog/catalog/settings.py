@@ -153,6 +153,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INTERNAL_IPS = [
     '127.0.0.1',
     '172.22.0.1',
+    '172.18.0.1'
 ]
 
 CATALOG_LOCATION = os.getenv('PEQOD_CATALOG_LOCATION', "/columbia-catalog-data")

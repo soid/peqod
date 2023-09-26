@@ -197,9 +197,9 @@ def classes(request):
         .order_by('semester_id', 'level', 'section_key')
 
     # precompute very similar classes (have only different schedule or instructor), so we display them as a single card
-    i = 0
     results_per_page = 100
     prev_c = None
+    course_list = course_list[:results_per_page]
     for c in course_list:
         c.view_instructors = []
         c.view_scheduled_days = []
@@ -218,9 +218,6 @@ def classes(request):
                 c.view_skip = True
 
         prev_c = c
-        i += 1
-        if i >= results_per_page:
-            break
 
     # pagination
     page_number = request.GET.get('p')
@@ -516,7 +513,16 @@ def location_details(request, location: str, term: str):
     return response
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def about(request):
+    print("Client IP:", get_client_ip(request))
     return render(request, 'about.html', {
         'menu': 'about',
         'last_updated': _get_last_updated(),
