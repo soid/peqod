@@ -80,7 +80,7 @@
                                 {% endif %}
                                 {% if course.location %}
                                 <li class="list-group-item">
-                                    Location: {{ course.location }}
+                                    Location: <a class="remove-underline" href="{%  url 'location_details' course.location|prof_urlize course.get_term %}">{{ course.location }}</a>
                                 </li>
                                 {% endif %}
                                 <li class="list-group-item">

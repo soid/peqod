@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load cutags %}
+
+{% block title %}Peqod :: {{ courses.0.course_code }} {{ courses.0.course_title }}{% endblock %}
+
+{% block content %}
+
+
+
+
+    <div class="py-2 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5>{{ location }}</h5>
+                            {{ semester }} {{ year }}
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Course</th>
+                                    <th scope="col">Instructors</th>
+                                    <th scope="col">Schedule</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for day_name,course in courses %}
+                                    {% if course.scheduled_days %}
+                                    <tr>
+                                        <td>
+                                            <small class="text-muted">{{ course.course_code }}</small><br/>
+                                            <a href="{% url 'course' course.course_code|course_code_urlize course.get_term %}">{{ course.course_title }}</a>
+                                        </td>
+                                        <td>{% include "instructor_include.html" with instructor=course.instructor %}</td>
+                                        <td>
+                                            {% ifchanged %}<h5>{{ day_name }}</h5>{% endifchanged %}
+                                            <snap style="white-space: nowrap;">{{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}</snap>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

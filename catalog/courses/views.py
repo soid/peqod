@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 from functools import reduce
 from operator import __or__, __and__
 from typing import List
@@ -462,6 +463,67 @@ def updates(request):
         ck = "|".join(deps_filter)
         if len(ck) < 4096:
             response.set_cookie(utils.COOKIE_LAST_DEPARTMENTS, ck, 60*60 * 24 * 90)
+    return response
+
+
+days2num = defaultdict(lambda: 10)
+days2num.update({"M": 1, "T": 2, "W": 3, "R": 4, "F": 5, "S": 6, "U": 7})
+num2dayname = {1: "Monday", 2: "Tuesday", 3: "Wednesday",
+               4: "Thursday", 5: "Friday",
+               6: "Saturday", 7: "Sunday",
+               10: "n/a"}
+def day2num(days):
+    return [days2num[x] for x in days]
+
+def schedule_comparator(item1, item2):
+    a, b = item1, item2
+
+    an = [days2num[x] for x in a.scheduled_days]
+    bn = [days2num[x] for x in b.scheduled_days]
+    if an == bn:
+        # compare by time
+        return 1 if a.scheduled_time_start < b.scheduled_time_start else -1
+    else:
+        return 1 if an < bn else -1
+
+
+def location_details(request, location: str, term: str):
+    results_limit = 100
+    year, semester = term.split('-', 1)
+    year = int(year)
+    location = cutags.prof_unurlize(location)
+
+    courses = get_list_or_404(Course.objects,
+                              location=location, year=year, semester=semester)
+    courses = courses[:results_limit]
+
+    # sort by class day/time
+    courses = list(courses)
+    courses_dict = defaultdict(list)
+    for course in courses:
+        for d in day2num(course.scheduled_days):
+            courses_dict[d].append(course)
+
+    for day in courses_dict.keys():
+        courses_dict[day].sort(key=lambda x: x.scheduled_time_start)
+
+    courses_sorted = []
+    for day in sorted(courses_dict.keys()):
+        for course in courses_dict[day]:
+            day_name = num2dayname[day]
+            courses_sorted.append((day_name, course))
+
+    context = {
+        'menu': 'location',
+        'courses': courses_sorted,
+        'location': location,
+        'year': year,
+        'semester': semester,
+        'last_updated': _get_last_updated(),
+    }
+
+    response = render(request, 'location_details.html', context)
+
     return response
 
 
