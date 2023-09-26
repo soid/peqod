@@ -192,15 +192,22 @@ def classes(request):
         or (q_points_min != QUERY_POINTS_MIN or q_points_max != QUERY_POINTS_MAX)
 
     # order
-    course_list = course_list \
+    course_list_all = course_list \
         .prefetch_related('instructor') \
         .order_by('semester_id', 'level', 'section_key')
 
-    # precompute very similar classes (have only different schedule or instructor), so we display them as a single card
+    # pagination
     results_per_page = 100
+    page_number = request.GET.get('p')
+    paginator = Paginator(course_list_all, results_per_page)
+    page_obj_list = paginator.get_page(page_number)
+
+    page_url = utils.get_page_url(request)
+
+    # Precompute very similar classes (e.g. having only different schedule or instructor),
+    # so we display them as a single card.
     prev_c = None
-    course_list = course_list[:results_per_page]
-    for c in course_list:
+    for c in page_obj_list:
         c.view_instructors = []
         c.view_scheduled_days = []
         if prev_c is not None \
@@ -216,15 +223,7 @@ def classes(request):
                 prev_c.view_scheduled_days.append((c.scheduled_days, c.scheduled_time_start, c.scheduled_time_end))
                 c.view_scheduled_days = prev_c.view_scheduled_days  # next refer to the previous which is the first
                 c.view_skip = True
-
         prev_c = c
-
-    # pagination
-    page_number = request.GET.get('p')
-    paginator = Paginator(course_list, results_per_page)
-    page_obj = paginator.get_page(page_number)
-
-    page_url = utils.get_page_url(request)
 
     # available filters
     semesters = Course.objects.order_by("-year", "semester").values('year', 'semester').distinct()
@@ -250,7 +249,7 @@ def classes(request):
         'display_fields': display_fields,
         # content
         "course_list": course_list,
-        'page_obj': page_obj,
+        'page_obj': page_obj_list,
         "semesters": semesters,
         "departments": _get_departments(),
         "days": utils.DAYS,
