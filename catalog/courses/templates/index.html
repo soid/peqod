@@ -130,7 +130,9 @@
                                 </a>
                             </h5>
                         {% if course.course_subtitle and not course.course_subtitle in course.course_title %}
-                            <h5 class="card-subtitle mb-2 text-muted">{{ course.course_subtitle }}</h5>
+                            <h5 class="card-subtitle mb-2 text-muted">
+                                <a class="remove-underline" href="{% url 'course_section' course.get_term course.call_number %}">{{ course.course_subtitle }}</a>
+                            </h5>
                         {% endif %}
                             <p class="card-text" id="card-details-{{ course.class_id }}" hidden>
                                 {% if course.course_descr %}
