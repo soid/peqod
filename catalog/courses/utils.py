@@ -1,6 +1,7 @@
 import datetime
 import json
 from collections import defaultdict
+from typing import List
 from urllib import parse
 
 from django.core.paginator import Paginator
@@ -84,10 +85,16 @@ class Term:
     def get_term_key(self):
         return str(self.year) + '-' + self.semester.capitalize()
 
+    # estimated start of semester
     def get_term_start_date(self):
         known_terms = {
-            (2021, 'summer'): datetime.date(2021, 6, 2),
+            (2021, 'summer'): datetime.date(2021, 5, 3),
             (2021, 'fall'): datetime.date(2021, 9, 9),
+            (2023, 'spring'): datetime.date(2023, 1, 17),
+            (2023, 'summer'): datetime.date(2023, 5, 22),
+            (2023, 'fall'): datetime.date(2023, 9, 5),
+            (2024, 'spring'): datetime.date(2024, 1, 16),
+            (2024, 'fall'): datetime.date(2024, 9, 3),
         }
         term_t = self.year, self.semester
         if term_t in known_terms:
@@ -97,9 +104,31 @@ class Term:
         if self.semester == 'fall':
             return datetime.date(self.year, 9, 5)
         if self.semester == 'spring':
-            return datetime.date(self.year, 1, 18)
+            return datetime.date(self.year, 1, 16)
         if self.semester == 'summer':
-            return datetime.date(self.year, 6, 1)
+            return datetime.date(self.year, 5, 20)
+
+    def get_term_end_date(self):
+        known_terms = {
+            (2021, 'summer'): datetime.date(2021, 8, 6),
+            (2021, 'fall'): datetime.date(2021, 9, 9),
+            (2023, 'spring'): datetime.date(2023, 5, 1),
+            (2023, 'summer'): datetime.date(2023, 8, 11),
+            (2023, 'fall'): datetime.date(2023, 12, 12),
+            (2024, 'spring'): datetime.date(2024, 4, 29),
+            (2024, 'fall'): datetime.date(2024, 12, 11),
+        }
+        term_t = self.year, self.semester
+        if term_t in known_terms:
+            return known_terms[term_t]
+
+        # rough estimate of when semester starts
+        if self.semester == 'fall':
+            return datetime.date(self.year, 12, 15)
+        if self.semester == 'spring':
+            return datetime.date(self.year, 5, 3)
+        if self.semester == 'summer':
+            return datetime.date(self.year, 8, 10)
 
     def get_previous_term(self):
         year = self.year
@@ -246,4 +275,32 @@ class IndexedJsonFile:
             result.append(obj)
         return result
 
+
+days2num = defaultdict(lambda: 10)
+days2num.update({"M": 0, "T": 1, "W": 2, "R": 3, "F": 4, "S": 5, "U": 6})
+num2dayname = {0: "Monday", 1: "Tuesday", 2: "Wednesday",
+               3: "Thursday", 4: "Friday",
+               5: "Saturday", 6: "Sunday",
+               10: "n/a"}
+day2icalday = {0: "MO", 1: "TU", 2: "WE",
+               3: "TH", 4: "FR",
+               5: "SA", 6: "SU",
+               10: ""}
+
+
+def day2num(days):
+    return [days2num[x] for x in days]
+
+
+def days2ical(days):
+    return [day2icalday[x] for x in day2num(days)]
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 

@@ -29,6 +29,7 @@ urlpatterns = [
     path('about', views.about, name='about'),
     path('updates', views.updates, name='updates'),
     path('course/<str:term>/<int:call_number>', views.course_section, name='course_section'),
+    path('course/<str:term>/<str:call_number>/ical', views.course_call_number_ical, name='course_number_ical'),
     path('course/<str:course_code>/', RedirectView.as_view(pattern_name='course_terms')),
     path('course/<str:course_code>', views.course_list_terms, name='course_terms'),
     path('location/<str:location>/<str:term>', views.location_details, name='location_details'),

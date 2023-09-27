@@ -7,6 +7,7 @@ from typing import List
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max, F
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.decorators.cache import cache_page
 
@@ -14,7 +15,9 @@ from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 from courses.templatetags import cutags
 from courses.templatetags.cutags import unslash
-from courses.utils import Term
+from courses.utils import Term, get_client_ip, day2num, days2ical
+
+from icalendar import Calendar, Event
 
 CACHE_GET_LAST_UPDATED = "_get_last_updated"
 CACHE_DEP_LIST_PAGE = "department_list_page"
@@ -462,16 +465,6 @@ def updates(request):
     return response
 
 
-days2num = defaultdict(lambda: 10)
-days2num.update({"M": 1, "T": 2, "W": 3, "R": 4, "F": 5, "S": 6, "U": 7})
-num2dayname = {1: "Monday", 2: "Tuesday", 3: "Wednesday",
-               4: "Thursday", 5: "Friday",
-               6: "Saturday", 7: "Sunday",
-               10: "n/a"}
-def day2num(days):
-    return [days2num[x] for x in days]
-
-
 def location_details(request, location: str, term: str):
     results_limit = 100
     year, semester = term.split('-', 1)
@@ -512,13 +505,68 @@ def location_details(request, location: str, term: str):
     return response
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+def course_call_number_ical(request, term: str, call_number: str):
+    # retrieve the course
+    year, semester = term.split('-', 1)
+    year = int(year)
+    courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
+                              call_number=call_number, year=year, semester=semester)
+    course = courses[0]
+    course_term = utils.Term(year, semester)
+
+    # make ical download file
+    response = HttpResponse(content_type='text/calendar')
+    response['Content-Disposition'] = 'attachment; filename="' + course.course_code + '.ics"'
+
+    # Add the .ical data to the response
+    cal = Calendar()
+
+    # Create a recurring event
+    event = Event()
+    event.add('summary', course.course_title)
+    if course.location:
+        event.add('location', 'New York, NY 10027')  # TODO: add address
+
+    descr = course.course_code + ": " + course.course_title + "\n"
+    if course.course_subtitle and not course.course_subtitle in course.course_title:
+        descr += course.course_subtitle + "\n"
+    if course.instructor:
+        descr += "Instructor: " + course.instructor.name + "\n"
+    if course.location:
+        descr += "Location: " + course.location + "\n"
+    if course.course_descr:
+        descr += "\n" + course.course_descr + "\n"
+    event.add('description', descr)
+
+    # determine first day of class
+    # find next day of class after start of the semester
+    def get_class_start_date(start_date):
+        days = sorted(day2num(course.scheduled_days))
+        for _ in range(7):
+            if start_date.weekday() in days:
+                return start_date
+            start_date = start_date + datetime.timedelta(days=1)
+        return start_date
+    class_start_date = get_class_start_date(course_term.get_term_start_date())
+
+    start_time = datetime.datetime.combine(class_start_date, course.scheduled_time_start)
+    end_time = datetime.datetime.combine(class_start_date, course.scheduled_time_end)
+    event.add('dtstart', start_time)
+    event.add('dtend', end_time)
+
+    # recurring setup
+    event.add('rrule', {
+        'freq': 'daily',
+        'byday': days2ical(course.scheduled_days),
+        'until': course_term.get_term_end_date()
+    })
+
+    cal.add_component(event)
+
+    response.write(cal.to_ical())
+
+    return response
+
 
 def about(request):
     print("Client IP:", get_client_ip(request))
