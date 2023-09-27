@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import datetime
 import json
+from urllib.parse import urlencode, quote_plus
 
 from django.db import models
+from django.urls import reverse
 
+import courses.utils as utils
 
 class Course(models.Model):
     year = models.PositiveSmallIntegerField()
@@ -71,6 +74,9 @@ class Course(models.Model):
     def get_term(self) -> str:
         return str(self.year) + "-" + self.semester
 
+    def get_term_obj(self) -> utils.Term:
+        return utils.Term(self.year, self.semester)
+
     @staticmethod
     def get_term_by_semester_id(semester_id: int) -> str:
         year = semester_id // 4
@@ -118,6 +124,60 @@ class Course(models.Model):
                 p_min = float(self.points)
                 p_max = p_min
         return p_min, p_max
+
+    def get_course_link(self):
+        return "http://peqod.com" + reverse("course_section", args=[self.get_term(), self.call_number])
+
+    def get_schedule_event_description(self):
+        descr = self.course_code + ": " + self.course_title + "\n"
+        if self.course_subtitle and not self.course_subtitle in self.course_title:
+            descr += self.course_subtitle + "\n"
+        if self.instructor:
+            descr += "Instructor: " + self.instructor.name + "\n"
+        if self.location:
+            descr += "Location: " + self.location + "\n"
+        if self.course_descr:
+            descr += "\n" + self.course_descr + "\n"
+        return descr
+
+    def get_schedule_event_start_date(self):
+        course_term = self.get_term_obj()
+        start_date = course_term.get_term_start_date()
+        days = sorted(utils.day2num(self.scheduled_days))
+        for _ in range(7):
+            if start_date.weekday() in days:
+                return start_date
+            start_date = start_date + datetime.timedelta(days=1)
+        return start_date
+
+    def get_schedule_gcal_link(self):
+        course_term = self.get_term_obj()
+
+        class_start_date = self.get_schedule_event_start_date()
+        start_time = datetime.datetime.combine(class_start_date, self.scheduled_time_start)
+        start_time_str = start_time.strftime('%Y%m%dT%H%M%S') + '-0500'
+        end_time = datetime.datetime.combine(class_start_date, self.scheduled_time_end)
+        end_time_str = end_time.strftime('%Y%m%dT%H%M%S') + '-0500'
+
+        recur_str = ""
+        if self.scheduled_days:
+            until = course_term.get_term_end_date().strftime('%Y%m%d')
+            days = utils.days2ical(self.scheduled_days)
+            recur_str = 'RRULE:FREQ=WEEKLY;UNTIL=' + until + ';BYDAY=' + ",".join(days)
+
+
+        descr = self.get_schedule_event_description()
+        descr += "\n" + \
+                 '<a href="' + self.get_course_link() + '">' + self.get_course_link() + '</a>'
+
+        params = {
+            'dates': start_time_str + '/' + end_time_str,
+            'text': self.course_title,
+            'details': descr,
+            'recur': recur_str,
+        }
+        url = "https://calendar.google.com/calendar/u/0/r/eventedit?" + urlencode(params)
+        return url
 
 
 class Instructor(models.Model):

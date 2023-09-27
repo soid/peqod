@@ -77,6 +77,7 @@
                                 <li class="list-group-item">
                                     Days: {{ course.scheduled_days }} {{ course.scheduled_time_start }}-{{ course.scheduled_time_end }}
                                     <a href="{% url 'course_number_ical' course.get_term course.call_number %}" class="btn btn-outline-info btn-sm" role="button">iCal</a>
+                                    <a href="{{ course.get_schedule_gcal_link }}" class="btn btn-outline-info btn-sm" role="button">gCal</a>
                                 </li>
                                 {% endif %}
                                 {% if course.location %}

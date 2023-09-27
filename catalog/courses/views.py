@@ -488,7 +488,7 @@ def location_details(request, location: str, term: str):
     courses_sorted = []
     for day in sorted(courses_dict.keys()):
         for course in courses_dict[day]:
-            day_name = num2dayname[day]
+            day_name = utils.num2dayname[day]
             courses_sorted.append((day_name, course))
 
     context = {
@@ -526,33 +526,18 @@ def course_call_number_ical(request, term: str, call_number: str):
     event.add('summary', course.course_title)
     if course.location:
         event.add('location', 'New York, NY 10027')  # TODO: add address
-
-    descr = course.course_code + ": " + course.course_title + "\n"
-    if course.course_subtitle and not course.course_subtitle in course.course_title:
-        descr += course.course_subtitle + "\n"
-    if course.instructor:
-        descr += "Instructor: " + course.instructor.name + "\n"
-    if course.location:
-        descr += "Location: " + course.location + "\n"
-    if course.course_descr:
-        descr += "\n" + course.course_descr + "\n"
-    event.add('description', descr)
+    event.add('description', course.get_schedule_event_description())
 
     # determine first day of class
     # find next day of class after start of the semester
-    def get_class_start_date(start_date):
-        days = sorted(day2num(course.scheduled_days))
-        for _ in range(7):
-            if start_date.weekday() in days:
-                return start_date
-            start_date = start_date + datetime.timedelta(days=1)
-        return start_date
-    class_start_date = get_class_start_date(course_term.get_term_start_date())
 
+    class_start_date = course.get_schedule_event_start_date()
     start_time = datetime.datetime.combine(class_start_date, course.scheduled_time_start)
     end_time = datetime.datetime.combine(class_start_date, course.scheduled_time_end)
     event.add('dtstart', start_time)
     event.add('dtend', end_time)
+
+    event.add('url', course.get_course_link())
 
     # recurring setup
     event.add('rrule', {
