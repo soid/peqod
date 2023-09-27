@@ -541,7 +541,7 @@ def course_call_number_ical(request, term: str, call_number: str):
 
     # recurring setup
     event.add('rrule', {
-        'freq': 'daily',
+        'freq': 'weekly',
         'byday': days2ical(course.scheduled_days),
         'until': course_term.get_term_end_date()
     })
