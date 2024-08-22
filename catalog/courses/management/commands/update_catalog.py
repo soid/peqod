@@ -131,6 +131,9 @@ class Command(BaseCommand):
 
                     if is_new_instr:
                         update.add_typ(CatalogUpdate.T_NEW_INSTRUCTOR)
+                else:
+                    obj.instructor = None
+                    update.related_instructor = None
 
                 # update fields
                 for key in course.keys():
@@ -245,6 +248,8 @@ class Command(BaseCommand):
                         update_diff['scheduled_time_end'] = course.scheduled_time_end.isoformat()
                     if course.instructor:
                         update.related_instructor = course.instructor
+                    else:
+                        update.related_instructor = None
                     update.diff = json.dumps(update_diff)
 
                     update.save()
