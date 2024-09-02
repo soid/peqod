@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.decorators.cache import cache_page
 
+from courses.deps import dep2canonical, canonical2deps
 from courses.models import Course, Instructor, CatalogUpdate
 from courses import utils
 from courses.templatetags import cutags
@@ -38,9 +39,20 @@ def _get_last_updated():
 
 def _get_departments():
     result = cache.get(CACHE_DEPARTMENTS)
-    if not result:
-        result = Course.objects.order_by("department").values('department').distinct()
-        cache.set(CACHE_DEPARTMENTS, result, 60*60 * 24)  # 24 hours cache
+    if result:
+        return result
+    result = Course.objects.order_by("department").values('department').distinct()
+    deps = set()
+    # replace to canonical department names
+    for dep in result:
+        name = dep["department"]
+        if name in dep2canonical:
+            deps.add(dep2canonical[name])
+        else:
+            deps.add(name)
+    deps = sorted(deps)
+    result = [{"department": name} for name in deps]
+    cache.set(CACHE_DEPARTMENTS, result, 60*60 * 24)  # 24 hours cache
     return result
 
 
@@ -151,7 +163,11 @@ def classes(request):
         display_fields.add("term")
     if q_department:
         if q_department != "ALL":
-            course_list = course_list.filter(department=q_department)
+            if q_department in canonical2deps:
+                deps = canonical2deps[q_department] + [q_department]
+                course_list = course_list.filter(department__in=deps)
+            else:
+                course_list = course_list.filter(department=q_department)
         else:
             display_fields.add("department")
     if q_level:
