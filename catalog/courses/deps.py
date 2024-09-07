@@ -74,6 +74,7 @@ dep2canonical = {
     "Religion @Barnard": "Religion (Barnard)",
     "Russian Eurasian E. European": "Russian, Eurasian, and East European Studies",
     "Scholars of Distinction @Barnard": "Scholars of Distinction (Barnard)",
+    "SCHOOL OF PROFESSIONAL STUDIES": "School of Professional Studies",
     "School of Professional Studies (DVSP)": "School of Professional Studies",
     "School of Professional Studies (SCEN)": "School of Professional Studies",
     "School of Professional Studies (SPS)": "School of Professional Studies",
