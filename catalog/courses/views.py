@@ -219,7 +219,7 @@ def classes(request):
             | Q(course_subtitle__icontains=q_query))
     q_extra_options = q_level or q_day \
         or (q_time_start != '06:00' and q_time_start != '00:00') \
-        or (q_time_end != '23:00') \
+        or (q_time_end != '23:59') \
         or q_max_enrollment \
         or q_free_space \
         or (q_points_min != QUERY_POINTS_MIN or q_points_max != QUERY_POINTS_MAX)
