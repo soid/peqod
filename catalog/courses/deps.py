@@ -15,6 +15,7 @@ dep2canonical = {
     "Asian and Middle East @Barnard": "Asian and Middle Eastern Studies (Barnard)",
     "Athena Center for Leadership Studies @Barnard": "Athena Center for Leadership Studies (Barnard)",
     "Biological Sciences @Barnard": "Biological Sciences (Barnard)",
+    "BARNARD SUMMER PROGRAMS": "Summer Programs (Barnard)",
     "Chemistry @Barnard": "Chemistry (Barnard)",
     "Classics @Barnard": "Classics (Barnard)",
     "Cntr Environ Rsch & Conservat": "Center for Environmental Research and Conservation",

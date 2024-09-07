@@ -60,6 +60,7 @@ class Course(models.Model):
             models.Index(fields=['department', 'year', 'semester']),
             models.Index(fields=['course_code', 'year', 'semester']),
             models.Index(fields=['call_number', 'year', 'semester']),
+            models.Index(fields=['year', 'semester', 'semester_id']),
             models.Index(fields=['location', 'year', 'semester']),
             models.Index(fields=['scheduled_time_start']),
             models.Index(fields=['scheduled_time_end']),

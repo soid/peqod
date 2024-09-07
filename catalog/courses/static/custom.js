@@ -8,3 +8,8 @@ function showExtraSearchOptions() {
     let state = document.getElementById('extra-search-options').hidden;
     document.getElementById('extra-search-options').hidden = ! state;
 }
+
+function runFilter() {
+    document.getElementById('filter-form').submit();
+}
+

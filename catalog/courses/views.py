@@ -37,11 +37,18 @@ def _get_last_updated():
     return result
 
 
-def _get_departments():
-    result = cache.get(CACHE_DEPARTMENTS)
+def _get_departments(year: int = None, semester: str = None):
+    memcache_key = CACHE_DEPARTMENTS
+    if year is not None and semester is not None:
+        memcache_key += str(year) + semester
+    result = cache.get(memcache_key)
     if result:
         return result
-    result = Course.objects.order_by("department").values('department').distinct()
+
+    q = Course.objects.order_by("department").values('department')
+    if year is not None and semester is not None:
+        q = q.filter(year=year, semester=semester)
+    result = q.distinct()
     deps = set()
     # replace to canonical department names
     for dep in result:
@@ -52,7 +59,8 @@ def _get_departments():
             deps.add(name)
     deps = sorted(deps)
     result = [{"department": name} for name in deps]
-    cache.set(CACHE_DEPARTMENTS, result, 60*60 * 24)  # 24 hours cache
+
+    cache.set(memcache_key, result, 60*60 * 24)  # 24 hours cache
     return result
 
 
@@ -145,7 +153,7 @@ def classes(request):
     q_level = request.GET.getlist('lvl', [])
     q_day = request.GET.getlist('d', [])
     q_time_start = request.GET.get('st', '00:00')
-    q_time_end = request.GET.get('et', '23:00')
+    q_time_end = request.GET.get('et', '23:59')
     q_max_enrollment = request.GET.get('enr_max', None)
     q_free_space = request.GET.get('fs', '') == 'on'
     q_points_min = request.GET.get('pts', QUERY_POINTS_MIN)
@@ -182,9 +190,15 @@ def classes(request):
         qs = reduce(__or__, qs)
         course_list = course_list.filter(qs)
     if q_time_start:
-        course_list = course_list.filter(scheduled_time_start__gte=datetime.time.fromisoformat(q_time_start))
+        qs = [Q(scheduled_time_start__gte=datetime.time.fromisoformat(q_time_start)),
+              Q(scheduled_time_start=None)]
+        qs = reduce(__or__, qs)
+        course_list = course_list.filter(qs)
     if q_time_end:
-        course_list = course_list.filter(scheduled_time_end__lte=datetime.time.fromisoformat(q_time_end))
+        qs = [Q(scheduled_time_end__lte=datetime.time.fromisoformat(q_time_end)),
+              Q(scheduled_time_start=None)]
+        qs = reduce(__or__, qs)
+        course_list = course_list.filter(qs)
     if q_max_enrollment:
         num = int(q_max_enrollment)
         course_list = course_list.filter(enrollment_max__lte=num)
@@ -246,6 +260,7 @@ def classes(request):
 
     # available filters
     semesters = Course.objects.order_by("-semester_id").values('year', 'semester').distinct()
+    departments = _get_departments(q_year, q_semester)
 
     context = {
         'menu': 'classes',
@@ -270,7 +285,7 @@ def classes(request):
         "course_list": course_list,
         'page_obj': page_obj_list,
         "semesters": semesters,
-        "departments": _get_departments(),
+        "departments": departments,
         "days": utils.DAYS,
         # last updated
         'last_updated': _get_last_updated(),
