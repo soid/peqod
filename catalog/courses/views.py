@@ -126,6 +126,7 @@ QUERY_POINTS_MAX = 25
 
 
 def classes(request):
+    # parse query
     q_term = request.GET.get('term', '').strip()
     save_term = True
     if not q_term and request.COOKIES.get(utils.COOKIE_LAST_USED_TERM):
@@ -163,6 +164,13 @@ def classes(request):
     display_fields = set(['scheduled_time', 'instructor', 'points'])
 
     course_list = Course.objects
+
+    # available filters
+    semesters = Course.objects.order_by("-semester_id").values('year', 'semester').distinct()
+    departments = _get_departments(q_year, q_semester)
+
+    if not any(x["department"] == q_department for x in departments):
+        q_department = "ALL"
 
     # filter
     if q_term and q_term != "ALL":
@@ -257,10 +265,6 @@ def classes(request):
                 c.view_scheduled_days = prev_c.view_scheduled_days  # next refer to the previous which is the first
                 c.view_skip = True
         prev_c = c
-
-    # available filters
-    semesters = Course.objects.order_by("-semester_id").values('year', 'semester').distinct()
-    departments = _get_departments(q_year, q_semester)
 
     context = {
         'menu': 'classes',
