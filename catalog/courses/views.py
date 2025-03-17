@@ -99,9 +99,27 @@ def _get_courses_enrollment_js(courses):
     for dt in dates:
         year, month, day = dt.split('-', 2)
         # js Date receives index of month
-        enr_all = [str(c.enrollment[dt]['cur']) if dt in c.enrollment else 'null' for c in courses]
-        max_value = max([max_value] +
-                        [c.enrollment[dt]['cur'] for c in courses if dt in c.enrollment])
+        def parse_enrollment(enr):
+            if isinstance(enr, dict):
+                # Old format
+                return enr['cur']
+            else:
+                # New format "cur/max"
+                cur = enr.split('/')[0]
+                return None if cur == '?' else int(cur)
+
+        enr_all = []
+        max_values = [max_value]
+        for c in courses:
+            if dt not in c.enrollment:
+                enr_all.append('null')
+                continue
+            val = parse_enrollment(c.enrollment[dt])
+            enr_all.append('null' if val is None else str(val))
+            if val is not None:
+                max_values.append(val)
+
+        max_value = max(max_values)
         annotation = "null"
         if term_start == dt:
             annotation = '"Semester starts"'
