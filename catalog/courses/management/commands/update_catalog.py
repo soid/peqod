@@ -47,6 +47,17 @@ class Command(BaseCommand):
         self.logger.addHandler(log_file_handler)
         self.logger.setLevel(logging.DEBUG)
 
+    def parse_enrollment_string(self, enrollment_str):
+        """Parse enrollment string in format 'cur/max' where either value can be '?'
+        Returns tuple of (current_enrollment, max_enrollment) where either can be None"""
+        if not enrollment_str or '/' not in enrollment_str:
+            return None, None
+        
+        cur, max_val = enrollment_str.split('/')
+        cur_enrollment = None if cur == '?' else int(cur)
+        max_enrollment = None if max_val == '?' else int(max_val)
+        return cur_enrollment, max_enrollment
+
     def handle(self, *args, **options):
         self.logger.info("Starting update_catalog.py")
         if options['overwrite_date']:
@@ -183,8 +194,8 @@ class Command(BaseCommand):
                     obj.enrollment = course_enr
 
                     last_dt = max(course_enr.keys())
-                    obj.enrollment_cur = course_enr[last_dt]['cur']
-                    obj.enrollment_max = course_enr[last_dt]['max']
+                    enrollment_str = course_enr[last_dt]
+                    obj.enrollment_cur, obj.enrollment_max = self.parse_enrollment_string(enrollment_str)
 
                 # remove from list of call numbers in current db
                 if course['department'] in cur_call_numbers.keys():
