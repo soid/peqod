@@ -164,3 +164,42 @@ CATALOG_LOGS_DIR = os.getenv('PEQOD_CATALOG_LOGS_DIR', root_dir)
 tmp = os.getenv('PEQOD_STATIC_ROOT', None)
 if tmp:
     STATIC_ROOT = tmp
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+            'datefmt': '%d/%b/%Y %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(CATALOG_LOGS_DIR, 'django-errors.log'),
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'ERROR',
+        },
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'courses': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+        }
+    }
+}
