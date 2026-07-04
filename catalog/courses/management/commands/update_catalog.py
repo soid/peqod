@@ -103,7 +103,10 @@ class Command(BaseCommand):
             for course, _, _ in utils.lazy_read_json(import_filename):
                 # skip bad data
                 if 'course_title' not in course or not course['course_title']:
-                    self.logger.info("WARNING: No course_title, skipping: %s", course)
+                    self.logger.info("WARNING: No course_title, skipping [%s]: %s", import_filename, course)
+                    continue
+                if not course.get('department'):
+                    self.logger.info("WARNING: No department, skipping [%s]: %s", import_filename, course)
                     continue
                 # find existing one
                 obj = Course.objects.filter(year=year,
@@ -191,6 +194,20 @@ class Command(BaseCommand):
                 if course_enr_row:
                     course_enr = course_enr_row[0]
                     course_enr = course_enr['enrollment']
+                    # normalize string format to {"cur": int, "max": int}
+                    # values are "cur/max" strings, e.g. "77/73" or "77/?" (unknown max)
+                    for dt, val in course_enr.items():
+                        if isinstance(val, str):
+                            parts = val.split('/')
+                            def _to_int(s):
+                                try:
+                                    return int(s)
+                                except (ValueError, TypeError):
+                                    return None
+                            course_enr[dt] = {
+                                'cur': _to_int(parts[0]),
+                                'max': _to_int(parts[1]) if len(parts) > 1 else None,
+                            }
                     obj.enrollment = course_enr
 
                     last_dt = max(course_enr.keys())
@@ -213,7 +230,7 @@ class Command(BaseCommand):
                             update.save()
                             updated_count += 1
                     except (DataError, OperationalError, ValidationError, IntegrityError):
-                        self.logger.error("Error while processing: %s", course)
+                        self.logger.error("Error while processing [%s]: %s", import_filename, course)
                         raise
 
                 if num % 500 == 0:
