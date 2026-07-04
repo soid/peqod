@@ -1,7 +1,8 @@
-version: '3'
+name: peqod
 
 services:
-  db:
+  peqod-db:
+    container_name: peqod-db
     image: mysql:5.7
     command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     ports:
@@ -12,8 +13,15 @@ services:
       MYSQL_USER: 'cu-graph-user'
       MYSQL_PASSWORD: 'password1'
       MYSQL_ROOT_PASSWORD: 'password2'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword2"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
-  cache:
+  peqod-cache:
+    container_name: peqod-cache
     image: memcached
     ports:
       - "11211:11211"
@@ -21,28 +29,22 @@ services:
       - memcached
       - -m 64
 
-  web:
+  peqod-web:
+    container_name: peqod-web
     build: .
     command: python catalog/manage.py runserver --insecure 0.0.0.0:8002
     environment:
       - PEQOD_DEBUG=True
+      - PEQOD_MYSQL_HOST=peqod-db
+      - PEQOD_MYSQL_NAME=cu-graph-db
+      - PEQOD_MYSQL_USER=root
+      - PEQOD_MYSQL_PW=password2
+      - PEQOD_MEMCACHE_LOCATION=peqod-cache:11211
     volumes:
       - .:/CUGraphWeb
       - /Users/soid/Dropbox/Code/2020/columbia-catalog-data:/columbia-catalog-data
     ports:
       - "8000:8002"
     depends_on:
-      - db
-
-  webwin:
-    build: .
-    command: python catalog/manage.py runserver --insecure 0.0.0.0:8002
-    environment:
-      - PEQOD_DEBUG=True
-    volumes:
-      - .:/CUGraphWeb
-      - "D:/Dropbox/Code/2020/columbia-catalog-data:/columbia-catalog-data"
-    ports:
-      - "8000:8002"
-    depends_on:
-      - db
+      peqod-db:
+        condition: service_healthy

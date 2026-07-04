@@ -91,7 +91,7 @@ DATABASES = {
         'NAME': os.getenv('PEQOD_MYSQL_NAME', 'cu-graph-db'),
         'USER': os.getenv('PEQOD_MYSQL_USER', 'root'),
         'PASSWORD': os.getenv('PEQOD_MYSQL_PW', 'password2'),
-        'HOST': os.getenv('PEQOD_MYSQL_HOST', 'db'),
+        'HOST': os.getenv('PEQOD_MYSQL_HOST', 'peqod-db'),
         'PORT': 3306,
         "OPTIONS": {
             "init_command": "SET SESSION group_concat_max_len = 1000000;"
@@ -102,7 +102,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': os.getenv('PEQOD_MEMCACHE_LOCATION', 'cache:11211'),
+        'LOCATION': os.getenv('PEQOD_MEMCACHE_LOCATION', 'peqod-cache:11211'),
     }
 }
 
