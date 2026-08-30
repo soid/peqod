@@ -20,8 +20,14 @@ from django.views.generic import RedirectView
 
 from courses import views
 
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('sentry-debug/', trigger_error),
     path('', RedirectView.as_view(pattern_name='search')),
     path('classes/', views.classes, name='search'),
     path('deps', views.deps_list, name='departments'),
