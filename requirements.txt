@@ -10,3 +10,4 @@ asgiref~=3.4.1
 setuptools~=57.4.0
 python-memcached
 pandas
+sentry-sdk[django]

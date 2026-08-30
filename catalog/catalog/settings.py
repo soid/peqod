@@ -13,6 +13,11 @@ import os
 from os.path import dirname, abspath
 from pathlib import Path
 
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -203,3 +208,10 @@ LOGGING = {
         }
     }
 }
+
+SENTRY_DSN = os.getenv('PEQOD_SENTRY_DSN', '')
+if SENTRY_DSN and sentry_sdk:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        send_default_pii=True,
+    )

@@ -8,14 +8,16 @@ import pandas as pd
 
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
-from django.db.utils import DataError, IntegrityError
-from django.db.utils import OperationalError
-from django.core.exceptions import ValidationError
 
 from catalog import settings
 from courses import utils, views
 from courses.models import Course, Instructor, CatalogUpdate, CatalogImports
 from courses.utils import IndexedJsonFile
+
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
 
 
 class Command(BaseCommand):
@@ -229,8 +231,17 @@ class Command(BaseCommand):
                         if update.typ and not options['no_updates']:
                             update.save()
                             updated_count += 1
-                    except (DataError, OperationalError, ValidationError, IntegrityError):
-                        self.logger.error("Error while processing [%s]: %s", import_filename, course)
+                    except Exception:
+                        self.logger.exception("Error while processing [%s]: %s", import_filename, course)
+                        if sentry_sdk:
+                            sentry_sdk.set_context("catalog_course", {
+                                "class_id": getattr(obj, "class_id", None),
+                                "course_code": getattr(obj, "course_code", None),
+                                "call_number": getattr(obj, "call_number", None),
+                                "year": year,
+                                "semester": semester,
+                                "course": course,
+                            })
                         raise
 
                 if num % 500 == 0:
