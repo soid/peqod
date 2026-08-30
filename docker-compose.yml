@@ -4,7 +4,8 @@ services:
   peqod-db:
     container_name: peqod-db
     image: mysql:5.7
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    platform: linux/amd64
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--innodb_use_native_aio=0']
     ports:
       - '3306:3306'
     environment:
@@ -13,6 +14,8 @@ services:
       MYSQL_USER: 'cu-graph-user'
       MYSQL_PASSWORD: 'password1'
       MYSQL_ROOT_PASSWORD: 'password2'
+    volumes:
+      - /Users/soid/.peqod/mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword2"]
       interval: 5s
@@ -40,6 +43,7 @@ services:
       - PEQOD_MYSQL_USER=root
       - PEQOD_MYSQL_PW=password2
       - PEQOD_MEMCACHE_LOCATION=peqod-cache:11211
+      - PEQOD_SENTRY_DSN=${PEQOD_SENTRY_DSN:-}
     volumes:
       - .:/CUGraphWeb
       - /Users/soid/Dropbox/Code/2020/columbia-catalog-data:/columbia-catalog-data

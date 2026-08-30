@@ -17,12 +17,22 @@ volumes:
   - /path/to/columbia-catalog-data:/columbia-catalog-data
 ```
 
+For running `catalog/manage.py` commands, you should open `bash` inside docker container:
+```bash
+docker exec -it peqod-web /bin/bash
+```
+
 Then import the catalog:
 
 ```bash
 python catalog/manage.py migrate
 python catalog/manage.py update_instructors
 python catalog/manage.py update_catalog ALL
+```
+
+If you want to import catalog only for one semester, specify it as the last argument:
+```bash
+python catalog/manage.py update_catalog 2026-Fall
 ```
 
 Create Django admin user:
