@@ -184,6 +184,12 @@ LOGGING = {
         },
     },
     'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stdout',
+            'formatter': 'verbose',
+        },
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
@@ -203,7 +209,7 @@ LOGGING = {
             'propagate': False,
         },
         'courses': {
-            'handlers': ['file'],
+            'handlers': ['console', 'file'],
             'level': 'ERROR',
         }
     }

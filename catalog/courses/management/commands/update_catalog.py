@@ -232,7 +232,7 @@ class Command(BaseCommand):
                             update.save()
                             updated_count += 1
                     except Exception:
-                        self.logger.exception("Error while processing [%s]: %s", import_filename, course)
+                        self.logger.exception("Error while processing [%s] - skipping: %s", import_filename, course)
                         if sentry_sdk:
                             sentry_sdk.set_context("catalog_course", {
                                 "class_id": getattr(obj, "class_id", None),
@@ -242,7 +242,6 @@ class Command(BaseCommand):
                                 "semester": semester,
                                 "course": course,
                             })
-                        raise
 
                 if num % 500 == 0:
                     self.logger.info("Processed: %d (%d updated)", num, updated_count)
