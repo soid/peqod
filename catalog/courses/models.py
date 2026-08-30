@@ -93,16 +93,27 @@ class Course(models.Model):
     def save(self, *args, **kwargs):
         # derived fields: exist for using them in SQL queries
         # extract level number for class e.g. U4771 is 4771
-        self.level = int("".join(
-            [x for x in list(self.class_id.split('-',1)[0])
-             if x.isdigit()]
-        ))
-        if self.level > 10000:
-            self.level = self.level // 10
+        self.level = self.parse_level()
         # set semester id
         self.semester_id = self.get_semester_id()
 
         super(Course, self).save(*args, **kwargs)
+
+    # Heiristic to determine level from class id.
+    # Example of class id: W1002-20263-001, but it can be GBCHM-20263-001, so we can't always tell the level.
+    def parse_level(self) -> int:
+        level = "".join(
+            [x for x in list(self.class_id.split('-',1)[0])
+             if x.isdigit()]
+        )
+        if level:
+            level = int(level)
+            if level > 10000:
+                level = level // 10
+        else:
+            # if level can't be determined, set to 1000
+            level = 1000
+        return level
 
     def get_canvas_id(self):
         section_key = self.section_key
