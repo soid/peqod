@@ -100,7 +100,7 @@
                                     Call number: {{ course.call_number }}
                                     {% if is_latest_term %}
                                     (<a href="{{ course.link }}">View in Directory of Classes</a>)
-                                    (<a href="https://vergil.registrar.columbia.edu/#/courses/{{ course.get_canvas_id }}">Vergil</a>)
+                                    (<a href="https://vergil.columbia.edu/vergil/search?hc=true&term={{ course.get_vergil_semester_id }}&cn={{ course.call_number }}">Vergil</a>)
                                     (<a href="https://courseworks2.columbia.edu/courses/sis_course_id:{{ course.get_canvas_id }}">CourseWorks</a>)
                                     {% endif %}
                                 </li>

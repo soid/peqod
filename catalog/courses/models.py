@@ -90,6 +90,9 @@ class Course(models.Model):
         sems_names = ['winter', 'spring', 'summer', 'fall']
         return self.year * 4 + sems_names.index(self.semester.lower())
 
+    def get_vergil_semester_id(self) -> int:
+        return int(self.section_key[0:5])
+
     def save(self, *args, **kwargs):
         # derived fields: exist for using them in SQL queries
         # extract level number for class e.g. U4771 is 4771
