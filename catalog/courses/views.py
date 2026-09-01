@@ -565,6 +565,10 @@ def course_call_number_ical(request, term: str, call_number: str):
     courses = get_list_or_404(Course.objects.prefetch_related('instructor'),
                               call_number=call_number, year=year, semester=semester)
     course = courses[0]
+
+    if not course.scheduled_days:
+        return HttpResponse("Course has no scheduled days", status=404)
+
     course_term = utils.Term(year, semester)
 
     # make ical download file
