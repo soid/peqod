@@ -151,11 +151,17 @@ def classes(request):
         q_term = request.COOKIES.get(utils.COOKIE_LAST_USED_TERM)
     if q_term:
         if q_term != "ALL":
-            q_semester, q_year = q_term.rsplit(" ", 1)
-            q_year = int(q_year)
+            # Department links used "+" as a space; some browsers (or bots?) encode that as %2B,
+            # which Django decodes to a literal plus rather than a space.
+            term_parts = q_term.replace("+", " ").rsplit(None, 1)
+            if len(term_parts) == 2 and term_parts[1].isdigit():
+                q_semester, q_year = term_parts[0], int(term_parts[1])
+                q_term = q_semester + " " + str(q_year)
+            else:
+                q_term = ""
         else:
             q_year = q_semester = None
-    else:
+    if not q_term:
         # use default
         save_term = False  # don't save default option
         interested_term = utils.Term.get_interested_term()
