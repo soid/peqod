@@ -215,9 +215,27 @@ LOGGING = {
     }
 }
 
+def _sentry_before_send(event, hint):
+    """Drop uWSGI noise from clients that disconnect before the response is fully written."""
+    exc_info = hint.get('exc_info')
+    if exc_info:
+        _exc_type, exc_value, _tb = exc_info
+        if isinstance(exc_value, BrokenPipeError):
+            return None
+        if isinstance(exc_value, OSError) and str(exc_value) == 'write error':
+            return None
+    for exc in event.get('exception', {}).get('values') or []:
+        if exc.get('type') in ('OSError', 'IOError') and exc.get('value') == 'write error':
+            return None
+        if exc.get('type') == 'BrokenPipeError':
+            return None
+    return event
+
+
 SENTRY_DSN = os.getenv('PEQOD_SENTRY_DSN', '')
 if SENTRY_DSN and sentry_sdk:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         send_default_pii=True,
+        before_send=_sentry_before_send,
     )
