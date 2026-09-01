@@ -522,7 +522,7 @@ def location_details(request, location: str, term: str):
     results_limit = 100
     year, semester = term.split('-', 1)
     year = int(year)
-    location = cutags.prof_unurlize(location)
+    location = cutags.prof_unurlize(unslash(location))
 
     courses = get_list_or_404(Course.objects,
                               location=location, year=year, semester=semester)
