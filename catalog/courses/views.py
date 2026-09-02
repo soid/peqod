@@ -473,6 +473,7 @@ def instructors(request):
                     "gscholar_id", "gscholar_hindex", "great_teacher_award") \
             .annotate(count_classes=Count('course__id'),
                       last_taught=Max('course__semester_id')) \
+            .filter(count_classes__gt=0) \
             .order_by('name')
 
         # pagination
